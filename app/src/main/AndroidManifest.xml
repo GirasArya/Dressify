@@ -25,15 +25,14 @@
             android:name=".ui.login.LoginActivity"
             android:exported="false"
             android:parentActivityName=".ui.landing.LandingActivity">
-
         </activity>
 
         <activity
             android:name=".ui.register.RegisterActivity"
             android:exported="false"
             android:parentActivityName=".ui.landing.LandingActivity">
-        </activity>
-
+      </activity>
+      
         <activity
             android:name=".ui.landing.LandingActivity"
             android:exported="true">
@@ -47,7 +46,6 @@
         <activity
             android:name=".ui.main.MainActivity"
             android:exported="false">
-
         </activity>
     </application>
 
