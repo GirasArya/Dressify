@@ -17,4 +17,7 @@
     <!-- Error messages -->
     <string name="error_fragment_message">An error occurred</string>
     <string name="dismiss_error">Dismiss</string>
+    <string name="tv_landingDesc">The Practical Solution for All Your Fashion Needs</string>
+    <string name="txt_btnLogin">Login</string>
+    <string name="tv_landingRegister">Register</string>
 </resources>
