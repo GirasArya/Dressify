@@ -1,12 +1,11 @@
-package com.capstone.dressify
+package com.capstone.dressify.ui.landing
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.capstone.dressify.databinding.ActivityLandingBinding
+import com.capstone.dressify.ui.login.LoginActivity
+import com.capstone.dressify.ui.register.RegisterActivity
 
 class LandingActivity : AppCompatActivity() {
 
@@ -23,7 +22,7 @@ class LandingActivity : AppCompatActivity() {
         }
 
         binding.tvLandingRegister.setOnClickListener{
-//            val intent = Intent(this@LandingActivity, RegisterActivity::class.java)
+            val intent = Intent(this@LandingActivity, RegisterActivity::class.java)
             startActivity(intent)
         }
     }

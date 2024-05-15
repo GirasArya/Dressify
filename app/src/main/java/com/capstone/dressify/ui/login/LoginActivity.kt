@@ -1,11 +1,12 @@
-package com.capstone.dressify
+package com.capstone.dressify.ui.login
 
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.capstone.dressify.databinding.ActivityLoginBinding
-import androidx.appcompat.widget.Toolbar
+import com.capstone.dressify.R
+import com.capstone.dressify.ui.main.MainActivity
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
