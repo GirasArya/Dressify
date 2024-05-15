@@ -52,7 +52,6 @@
             android:layout_width="325dp"
             android:layout_height="wrap_content"
             android:hint="@string/txt_hintLogin"
-            android:background="@color/input_color"
             android:inputType="textPassword" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -135,7 +134,6 @@
             android:layout_height="wrap_content"
             android:hint="@string/txt_hintEmail"
             android:inputType="textEmailAddress"
-            android:background="@color/input_color"
             app:layout_constraintBottom_toTopOf="@+id/til_passwordLogin"
             app:layout_constraintTop_toBottomOf="@+id/tv_loginTitle"
             tools:layout_editor_absoluteX="44dp" />
