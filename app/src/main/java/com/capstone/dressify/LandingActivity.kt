@@ -23,7 +23,7 @@ class LandingActivity : AppCompatActivity() {
         }
 
         binding.tvLandingRegister.setOnClickListener{
-            val intent = Intent(this@LandingActivity, RegisterActivity::class.java)
+//            val intent = Intent(this@LandingActivity, RegisterActivity::class.java)
             startActivity(intent)
         }
     }
