@@ -22,29 +22,6 @@
         android:theme="@style/Theme.Dressify"
         tools:targetApi="31">
         <activity
-            android:name=".ui.LandingActivity"
-            android:banner="@drawable/app_icon_your_company"
-            android:exported="true"
-            android:icon="@drawable/app_icon_your_company"
-            android:label="@string/title_activity_landing"
-            android:logo="@drawable/app_icon_your_company"
-            android:screenOrientation="landscape">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".ui.DetailsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".PlaybackActivity"
-            android:exported="false" />
-        <activity
-            android:name=".BrowseErrorActivity"
-            android:exported="false" />
-        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
