@@ -4,12 +4,17 @@
     tools:ignore="ExtraText">
     <font
         android:fontStyle="normal"
-        android:fontWeight="00"
+        android:fontWeight="400"
         android:font="@font/monserrat_regular"/>
 
     <font
         android:fontStyle="normal"
         android:fontWeight="400"
         android:font="@font/jost_regular" />
+
+    <font
+        android:fontStyle="normal"
+        android:fontWeight="400"
+        android:font="@font/itim_regular" />
 
 </font-family>
