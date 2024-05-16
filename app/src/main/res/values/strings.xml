@@ -26,4 +26,5 @@
     <string name="tv_profileEmailHeader">Email</string>
     <string name="tv_profileEmail">Email</string>
     <string name="tv_btnLogout">Logout</string>
+    <string name="tv_clotheName">Clothe Name</string>
 </resources>
