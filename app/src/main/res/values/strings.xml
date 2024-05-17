@@ -12,6 +12,7 @@
     <string name="tvRegisterTitle">Register</string>
     <string name="txt_hintUsername">Username</string>
     <string name="tv_termsAgreement">I agree to the Privacy policy and Terms of use.</string>
+
     <string name="tvTitleRecomendation">Discover Your Best Style With Us</string>
     <string name="male">Male</string>
     <string name="female">Female</string>
@@ -36,5 +37,24 @@
     <string name="sports">Sports</string>
     <string name="formal">Formal</string>
     <string name="btnSubmitRecomendation">Submit</string>
+
+
+    <string name="nav_home">Home</string>
+    <string name="nav_fave">Favorite</string>
+    <string name="nav_profile">Profile</string>
+    <string name="catalog_toolbar_title">Dressify</string>
+    <string name="tv_catalogTitle">Based on your preference</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="tv_noitem">No Item added</string>
+    <string name="tv_profileTitle">Profile</string>
+    <string name="tv_profileUsernameHeader">Username</string>
+    <string name="tv_profileUsername">Username</string>
+    <string name="tv_profileEmailHeader">Email</string>
+    <string name="tv_profileEmail">Email</string>
+    <string name="tv_btnLogout">Logout</string>
+    <string name="tv_clotheName">Clothe Name</string>
+    <string name="tv_logintextAccount">Don\'t have an account?</string>
+    <string name="tv_logintoregister">Register</string>
 
 </resources>
