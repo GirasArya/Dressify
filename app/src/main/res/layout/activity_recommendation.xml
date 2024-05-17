@@ -8,15 +8,14 @@
     tools:context=".ui.recommendation.RecommendationActivity">
 
   <androidx.core.widget.NestedScrollView
+      android:id="@+id/nestedScrollView"
       android:layout_width="match_parent"
       android:layout_height="0dp"
       android:layout_marginBottom="16dp"
       app:layout_constraintBottom_toTopOf="@id/btnSubmit"
-      app:layout_constraintTop_toTopOf="parent"
-      app:layout_constraintVertical_bias="1.0"
-      tools:layout_editor_absoluteX="165dp">
+      app:layout_constraintTop_toTopOf="parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+  <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
