@@ -7,7 +7,9 @@ import androidx.appcompat.app.AppCompatActivity
 import com.capstone.dressify.databinding.ActivityLoginBinding
 import com.capstone.dressify.R
 import com.capstone.dressify.ui.main.MainActivity
+import com.capstone.dressify.ui.recommendation.RecommendationActivity
 import com.capstone.dressify.ui.register.RegisterActivity
+
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
@@ -31,7 +33,7 @@ class LoginActivity : AppCompatActivity() {
 
 
         binding.btnLogin.setOnClickListener {
-            val intent = Intent(this@LoginActivity, MainActivity::class.java)
+            val intent = Intent(this@LoginActivity, RecommendationActivity::class.java)
             startActivity(intent)
         }
 
