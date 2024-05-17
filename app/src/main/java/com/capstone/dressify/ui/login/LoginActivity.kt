@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.capstone.dressify.databinding.ActivityLoginBinding
 import com.capstone.dressify.R
 import com.capstone.dressify.ui.main.MainActivity
+import com.capstone.dressify.ui.register.RegisterActivity
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
@@ -22,6 +23,12 @@ class LoginActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_arrow)
         supportActionBar?.elevation = 0f
+
+        binding.tvLoginToRegister.setOnClickListener {
+            val intent = Intent(this, RegisterActivity::class.java)
+            startActivity(intent)
+        }
+
 
         binding.btnLogin.setOnClickListener {
             val intent = Intent(this@LoginActivity, MainActivity::class.java)
