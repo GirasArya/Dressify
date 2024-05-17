@@ -10,4 +10,5 @@
     <color name="default_background">#3d3d3d</color>
     <color name="btn_primary">#007BFF</color>
     <color name="input_color">#E5E5E5</color>
+    <color name="bottom_nav_background">#1E1E1E</color>
 </resources>
