@@ -12,5 +12,29 @@
     <string name="tvRegisterTitle">Register</string>
     <string name="txt_hintUsername">Username</string>
     <string name="tv_termsAgreement">I agree to the Privacy policy and Terms of use.</string>
+    <string name="tvTitleRecomendation">Discover Your Best Style With Us</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="type_of_clothes">Type of Clothes</string>
+    <string name="shirts">Shirts</string>
+    <string name="t_shirts">T-Shirts</string>
+    <string name="base_color">Base Color</string>
+    <string name="black">Black</string>
+    <string name="brown">Brown</string>
+    <string name="white">White</string>
+    <string name="gray">Gray</string>
+    <string name="blue">Blue</string>
+    <string name="red">Red</string>
+    <string name="season">Season</string>
+    <string name="fall">Fall</string>
+    <string name="winter">Winter</string>
+    <string name="summer">Summer</string>
+    <string name="spring">Spring</string>
+    <string name="usage">Usage</string>
+    <string name="casual">Casual</string>
+    <string name="ethnic">Ethnic</string>
+    <string name="sports">Sports</string>
+    <string name="formal">Formal</string>
+    <string name="btnSubmitRecomendation">Submit</string>
 
 </resources>
