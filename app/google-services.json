@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "367178700394",
+    "project_id": "myauth-b1081",
+    "storage_bucket": "myauth-b1081.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:367178700394:android:dff45dc0fadb7de79d9c13",
+        "android_client_info": {
+          "package_name": "com.capstone.dressify"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "367178700394-2fafg4dm0bkhd07iv43qs5hbqlv61h8t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.capstone.dressify",
+            "certificate_hash": "4a7cfae87090820d9b53f759f1f5673d63a61181"
+          }
+        },
+        {
+          "client_id": "367178700394-hep86bfvm79v8kafeqegfalebpv06fa6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnvA4QHld4PyJcFgDu-8KL34l1fzcyqYU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "367178700394-hep86bfvm79v8kafeqegfalebpv06fa6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
