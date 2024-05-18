@@ -12,6 +12,7 @@ import com.capstone.dressify.R
 import com.capstone.dressify.databinding.ActivityMainBinding
 import com.capstone.dressify.ui.camera.CameraActivity
 import com.capstone.dressify.ui.camera.CameraActivity.Companion.CAMERAX_RESULT
+import com.capstone.dressify.ui.landing.LandingActivity
 import com.capstone.dressify.ui.login.LoginActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.Firebase
@@ -67,7 +68,7 @@ class MainActivity : AppCompatActivity() {
         // Not signed in, launch the Login activity
         if (firebaseUser == null) {
             Toast.makeText(this, "Hayo blom login ya", Toast.LENGTH_SHORT).show()
-           startActivity(Intent(this, LoginActivity::class.java))
+           startActivity(Intent(this, LandingActivity::class.java))
         }
     }
 
