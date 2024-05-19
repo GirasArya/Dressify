@@ -5,6 +5,9 @@ plugins {
     //ksp compiler and parcelize
     id("com.google.devtools.ksp")
     id("kotlin-parcelize")
+
+    //google service
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -46,6 +49,9 @@ android {
 }
 
 dependencies {
+    //Glide
+    implementation ("com.github.bumptech.glide:glide:4.14.2")
+
     //Datastore
     implementation ("androidx.datastore:datastore-preferences:1.1.1")
 
@@ -69,11 +75,19 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
 
-    //CameraX
+    // CameraX
     val cameraxVersion = "1.3.3"
     implementation("androidx.camera:camera-camera2:$cameraxVersion")
     implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
     implementation("androidx.camera:camera-view:$cameraxVersion")
+
+
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
+    implementation("com.google.firebase:firebase-auth")
+    implementation ("com.firebaseui:firebase-ui-auth:7.2.0")
+    implementation("com.google.android.gms:play-services-auth:21.1.1")
+    implementation("com.google.firebase:firebase-analytics")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
