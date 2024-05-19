@@ -116,7 +116,7 @@
             android:id="@+id/iv_profileEmail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_profile_outline" />
+            android:src="@drawable/ic_email" />
 
         <TextView
             android:id="@+id/tv_profileEmail"
