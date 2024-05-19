@@ -66,8 +66,14 @@ dependencies {
     ksp("androidx.room:room-compiler:2.6.1")
 
     // Fragment and navigation
-    implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
     implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
+
+    //CameraX
+    val cameraxVersion = "1.3.3"
+    implementation("androidx.camera:camera-camera2:$cameraxVersion")
+    implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
+    implementation("androidx.camera:camera-view:$cameraxVersion")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
