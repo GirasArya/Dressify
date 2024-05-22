@@ -1,4 +1,4 @@
-package com.capstone.dressify.ui.main
+package com.capstone.dressify.ui.view.main
 
 import android.content.Intent
 import android.os.Bundle
@@ -15,8 +15,8 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.capstone.dressify.R
 import com.capstone.dressify.databinding.FragmentProfileBinding
-import com.capstone.dressify.ui.landing.LandingActivity
-import com.capstone.dressify.ui.login.LoginActivity
+import com.capstone.dressify.ui.view.landing.LandingActivity
+import com.capstone.dressify.ui.view.login.LoginActivity
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth

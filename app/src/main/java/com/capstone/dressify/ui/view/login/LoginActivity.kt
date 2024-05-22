@@ -1,4 +1,4 @@
-package com.capstone.dressify.ui.login
+package com.capstone.dressify.ui.view.login
 
 import android.app.Activity
 import android.content.ContentValues.TAG
@@ -10,9 +10,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.capstone.dressify.R
 import com.capstone.dressify.databinding.ActivityLoginBinding
-import com.capstone.dressify.ui.main.MainActivity
-import com.capstone.dressify.ui.recommendation.RecommendationActivity
-import com.capstone.dressify.ui.register.RegisterActivity
+import com.capstone.dressify.ui.view.main.MainActivity
+import com.capstone.dressify.ui.view.recommendation.RecommendationActivity
+import com.capstone.dressify.ui.view.register.RegisterActivity
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient

@@ -1,11 +1,11 @@
-package com.capstone.dressify.ui.landing
+package com.capstone.dressify.ui.view.landing
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.capstone.dressify.databinding.ActivityLandingBinding
-import com.capstone.dressify.ui.login.LoginActivity
-import com.capstone.dressify.ui.register.RegisterActivity
+import com.capstone.dressify.ui.view.login.LoginActivity
+import com.capstone.dressify.ui.view.register.RegisterActivity
 
 class LandingActivity : AppCompatActivity() {
 
