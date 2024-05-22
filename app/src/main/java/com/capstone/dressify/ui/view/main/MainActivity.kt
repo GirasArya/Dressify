@@ -1,4 +1,4 @@
-package com.capstone.dressify.ui.main
+package com.capstone.dressify.ui.view.main
 
 import android.content.Intent
 import android.net.Uri
@@ -10,10 +10,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import com.capstone.dressify.R
 import com.capstone.dressify.databinding.ActivityMainBinding
-import com.capstone.dressify.ui.camera.CameraActivity
-import com.capstone.dressify.ui.camera.CameraActivity.Companion.CAMERAX_RESULT
-import com.capstone.dressify.ui.landing.LandingActivity
-import com.capstone.dressify.ui.login.LoginActivity
+import com.capstone.dressify.ui.view.camera.CameraActivity
+import com.capstone.dressify.ui.view.camera.CameraActivity.Companion.CAMERAX_RESULT
+import com.capstone.dressify.ui.view.landing.LandingActivity
+import com.capstone.dressify.ui.view.login.LoginActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
@@ -35,6 +35,9 @@ class MainActivity : AppCompatActivity() {
         binding.tvCatalogTitle.setOnClickListener {
             startCameraX()
         }
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fl_fragment, CatalogFragment())
+            .commit()
 
         bottomNavigationView.setOnNavigationItemSelectedListener {
             when (it.itemId) {

@@ -1,41 +1,41 @@
 {
   "project_info": {
-    "project_number": "301840015409",
-    "project_id": "dressify-fc67b",
-    "storage_bucket": "dressify-fc67b.appspot.com"
+    "project_number": "367178700394",
+    "project_id": "myauth-b1081",
+    "storage_bucket": "myauth-b1081.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:301840015409:android:93e0d7ecc83279d40db510",
+        "mobilesdk_app_id": "1:367178700394:android:dff45dc0fadb7de79d9c13",
         "android_client_info": {
           "package_name": "com.capstone.dressify"
         }
       },
       "oauth_client": [
         {
-          "client_id": "301840015409-sl1im8sjk8720b2ibfq2qlm1b7q4o2qd.apps.googleusercontent.com",
+          "client_id": "367178700394-2fafg4dm0bkhd07iv43qs5hbqlv61h8t.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.capstone.dressify",
-            "certificate_hash": "d13d32136e3a4beeda1302ff309391b001783618"
+            "certificate_hash": "4a7cfae87090820d9b53f759f1f5673d63a61181"
           }
         },
         {
-          "client_id": "301840015409-oorde2p7d73h8l27u2k23gkn632rg0lj.apps.googleusercontent.com",
+          "client_id": "367178700394-hep86bfvm79v8kafeqegfalebpv06fa6.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDeT4DGZOzXZXYdnyo6tFuzt9fRS3Hqd3E"
+          "current_key": "AIzaSyCnvA4QHld4PyJcFgDu-8KL34l1fzcyqYU"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "301840015409-oorde2p7d73h8l27u2k23gkn632rg0lj.apps.googleusercontent.com",
+              "client_id": "367178700394-hep86bfvm79v8kafeqegfalebpv06fa6.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

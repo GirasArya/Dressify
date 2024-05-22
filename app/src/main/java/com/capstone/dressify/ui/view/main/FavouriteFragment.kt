@@ -1,4 +1,4 @@
-package com.capstone.dressify.ui.main
+package com.capstone.dressify.ui.view.main
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

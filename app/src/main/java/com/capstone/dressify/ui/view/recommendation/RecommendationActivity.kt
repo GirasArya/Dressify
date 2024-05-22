@@ -1,4 +1,4 @@
-package com.capstone.dressify.ui.recommendation
+package com.capstone.dressify.ui.view.recommendation
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,7 +8,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.capstone.dressify.R
 import com.capstone.dressify.databinding.ActivityRecommendationBinding
-import com.capstone.dressify.ui.main.MainActivity
+import com.capstone.dressify.ui.view.main.MainActivity
 
 class RecommendationActivity : AppCompatActivity() {
 

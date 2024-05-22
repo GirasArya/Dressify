@@ -1,4 +1,4 @@
-package com.capstone.dressify.ui.camera
+package com.capstone.dressify.ui.view.camera
 
 import android.Manifest
 import android.content.Intent
@@ -19,7 +19,7 @@ import androidx.core.content.ContextCompat
 import com.capstone.dressify.databinding.ActivityCameraBinding
 import com.capstone.dressify.helpers.createCustomTempFile
 import com.capstone.dressify.helpers.getImageUri
-import com.capstone.dressify.ui.main.MainActivity
+import com.capstone.dressify.ui.view.main.MainActivity
 
 class CameraActivity : AppCompatActivity() {
 
