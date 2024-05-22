@@ -8,9 +8,9 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
-import com.capstone.dressify.adapter.CatalogAdapter
+import com.capstone.dressify.ui.adapter.CatalogAdapter
 import com.capstone.dressify.databinding.FragmentCatalogBinding
-import com.capstone.dressify.viewmodel.MainViewModel
+import com.capstone.dressify.ui.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 
 class CatalogFragment : Fragment() {
@@ -31,6 +31,7 @@ class CatalogFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        mainViewModel.fetchProducts()
 
         // Observe the product list
         mainViewModel.productList.observe(viewLifecycleOwner) { products ->
@@ -39,11 +40,6 @@ class CatalogFragment : Fragment() {
                 binding.rvCatalogGrid.adapter = adapter
                 binding.rvCatalogGrid.layoutManager = GridLayoutManager(requireContext(), 2)
             }
-        }
-
-        // Fetch products when the view is created
-        viewLifecycleOwner.lifecycleScope.launch {
-            mainViewModel.fetchProducts()
         }
     }
 

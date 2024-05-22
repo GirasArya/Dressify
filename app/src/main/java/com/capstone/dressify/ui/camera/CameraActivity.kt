@@ -47,6 +47,9 @@ class CameraActivity : AppCompatActivity() {
         binding = ActivityCameraBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val productImage = intent.getStringExtra("PRODUCT_IMAGE")
+        val productTitle = intent.getStringExtra("PRODUCT_TITLE")
+
         if (!allPermissionGranted()) {
             requestPermissionLauncher.launch(REQUIRED_PERMISSION)
         } else {

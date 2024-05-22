@@ -1,8 +1,8 @@
-package com.capstone.dressify.response
+package com.capstone.dressify.data.remote.response
 
 import com.google.gson.annotations.SerializedName
 
-data class Response(
+data class CatalogResponse(
 
 	@field:SerializedName("image")
 	val image: String? = null,

@@ -24,8 +24,8 @@
 
             <ImageView
                 android:id="@+id/iv_imgClothes"
-                android:layout_width="135dp"
-                android:layout_height="135dp"
+                android:layout_width="170dp"
+                android:layout_height="170dp"
                 android:src="@drawable/ic_place_holder"
                 android:alpha="0.3"/>
 
