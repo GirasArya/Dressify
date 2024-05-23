@@ -42,8 +42,21 @@ class CatalogFragment : Fragment() {
                 binding.rvCatalogGrid.layoutManager = GridLayoutManager(requireContext(), 2)
             }
         }
+
+        mainViewModel.isLoading.observe(viewLifecycleOwner){
+            showLoading(it)
+        }
+
         return binding.root
 
+    }
+
+    private fun showLoading(isLoading : Boolean) {
+        if (isLoading){
+            binding.catalogLoading.visibility = View.VISIBLE
+        }else{
+            binding.catalogLoading.visibility = View.GONE
+        }
     }
 
     override fun onDestroyView() {

@@ -1,6 +1,7 @@
 package com.capstone.dressify.ui.viewmodel
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,16 +14,19 @@ import retrofit2.Response
 
 class MainViewModel : ViewModel() {
     val productList = MutableLiveData<List<CatalogResponse>>()
-
+    val _isLoading = MutableLiveData<Boolean>()
+    val isLoading : LiveData<Boolean> = _isLoading
 
     fun fetchProducts() {
         val client = ApiConfig.getApiService().getProducts()
+        _isLoading.value = true
         client.enqueue(object : Callback<List<CatalogResponse>> {
             override fun onResponse(
                 call: Call<List<CatalogResponse>>,
                 response: Response<List<CatalogResponse>>
             ) {
                 if (response.isSuccessful) {
+                    _isLoading.value = false
                     productList.value = response.body()
                 }
             }
