@@ -6,6 +6,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 
 @Dao
 interface FavoriteDao {
@@ -20,4 +21,5 @@ interface FavoriteDao {
 
     @Query("SELECT * FROM FavoriteEntity WHERE title = :title")
     fun getFavoriteByTitle(title: String): LiveData<List<FavoriteEntity>>
+
 }

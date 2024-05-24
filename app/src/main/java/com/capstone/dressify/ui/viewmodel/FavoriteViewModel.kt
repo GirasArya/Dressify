@@ -2,7 +2,9 @@ package com.capstone.dressify.ui.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
 import com.capstone.dressify.data.local.FavoriteDao
 import com.capstone.dressify.data.local.FavoriteEntity
@@ -10,6 +12,8 @@ import com.capstone.dressify.data.local.FavoriteRoomDatabase
 import com.capstone.dressify.domain.repository.FavoriteRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class FavoriteViewModel(application: Application): ViewModel() {
@@ -17,12 +21,17 @@ class FavoriteViewModel(application: Application): ViewModel() {
     private var favoriteDao: FavoriteDao
     private var db: FavoriteRoomDatabase = FavoriteRoomDatabase.getDatabase(application)
     var itemFavorite: Boolean = false
+    var _isLoading = MutableLiveData<Boolean>()
+    var isLoading : LiveData<Boolean> = _isLoading
 
     init {
         favoriteDao = db.favoriteDao()
+        _isLoading.value = true
     }
 
+
     fun getAllFavorite(): LiveData<List<FavoriteEntity>> {
+        _isLoading.value = false
         return mFavoriteRepository.getAllFavorite()
     }
 
@@ -45,4 +54,5 @@ class FavoriteViewModel(application: Application): ViewModel() {
     fun isItemFavorite(title: String): LiveData<Boolean> {
         return favoriteDao.getFavoriteByTitle(title).map { it.isNotEmpty() }
     }
+
 }

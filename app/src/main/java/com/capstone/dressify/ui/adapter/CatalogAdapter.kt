@@ -5,9 +5,9 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.capstone.dressify.R
 import com.capstone.dressify.data.remote.response.CatalogResponse
 import com.capstone.dressify.databinding.ItemCardBinding
 import com.capstone.dressify.ui.view.camera.CameraActivity
@@ -19,8 +19,10 @@ class CatalogAdapter(
     private val lifecycleOwner: LifecycleOwner,
     private val onFavoriteClickListener: OnFavoriteClickListener
 ) : RecyclerView.Adapter<CatalogAdapter.CatalogViewHolder>() {
+    private val isFavoriteLiveData = MutableLiveData<Boolean>()
 
-    inner class CatalogViewHolder(private val binding: ItemCardBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class CatalogViewHolder(val binding: ItemCardBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(product: CatalogResponse) {
             Glide.with(itemView)
                 .load(product.image)
@@ -36,12 +38,30 @@ class CatalogAdapter(
                 onFavoriteClickListener.onFavoriteClick(product)
             }
 
-            favoriteViewModel.isItemFavorite(product.title ?: "").observe(lifecycleOwner) { isFavorite ->
-                if (isFavorite) {
-                    binding.ivIcFavorite.setImageResource(R.drawable.ic_favorite_fill)
-                } else {
-                    binding.ivIcFavorite.setImageResource(R.drawable.ic_favorite_outline)
+            val title: String? = product.title
+            val image: String? = product.image
+
+            var isCheck = false
+            favoriteViewModel.isItemFavorite(product.title ?: "")
+                .observe(lifecycleOwner) { isFavorite ->
+                    if (isFavorite) {
+                        binding.ivIcFavorite.isChecked = true
+                        isCheck = true
+                    } else {
+                        binding.ivIcFavorite.isChecked = false
+                        isCheck = false
+                    }
                 }
+
+
+            binding.ivIcFavorite.setOnClickListener {
+                isCheck = !isCheck
+                if (isCheck) {
+                    favoriteViewModel.addFavorite(title!!, image!!)
+                } else {
+                    favoriteViewModel.deleteFavorite(title!!, image!!)
+                }
+                binding.ivIcFavorite.isChecked = isCheck
             }
         }
     }
