@@ -49,7 +49,7 @@ class ProfileFragment : Fragment() {
         super.onResume()
         auth = Firebase.auth // Initialize auth here
         val firebaseUser = auth.currentUser
-
+        binding.profileLoading.visibility = View.VISIBLE
         if (firebaseUser != null) {
             val email = firebaseUser.email
             val displayName = firebaseUser.displayName
@@ -64,6 +64,7 @@ class ProfileFragment : Fragment() {
 
             binding.tvProfileEmail.text = email ?: "Email not available"
             binding.tvProfileUsername.text = displayName ?: "Username not available"
+            binding.profileLoading.visibility = View.GONE
         }
     }
 

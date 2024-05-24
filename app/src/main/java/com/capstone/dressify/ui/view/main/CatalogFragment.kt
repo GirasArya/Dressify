@@ -1,6 +1,5 @@
 package com.capstone.dressify.ui.view.main
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,14 +8,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
-import com.capstone.dressify.data.remote.response.CatalogResponse
 import com.capstone.dressify.databinding.FragmentCatalogBinding
 import com.capstone.dressify.ui.adapter.CatalogAdapter
-import com.capstone.dressify.ui.view.camera.CameraActivity
 import com.capstone.dressify.ui.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 
-class CatalogFragment : Fragment(), CatalogAdapter.OnItemClickListener {
+class CatalogFragment : Fragment() {
 
     private var _binding: FragmentCatalogBinding? = null
     private val binding get() = _binding!!
@@ -40,18 +37,26 @@ class CatalogFragment : Fragment(), CatalogAdapter.OnItemClickListener {
 
         mainViewModel.productList.observe(viewLifecycleOwner) { products ->
             if (products != null) {
-                val adapter = CatalogAdapter(products, this)
+                val adapter = CatalogAdapter(products)
                 binding.rvCatalogGrid.adapter = adapter
                 binding.rvCatalogGrid.layoutManager = GridLayoutManager(requireContext(), 2)
             }
         }
+
+        mainViewModel.isLoading.observe(viewLifecycleOwner){
+            showLoading(it)
+        }
+
         return binding.root
 
     }
 
-    override fun onItemClick(product: CatalogResponse) {
-        val intent = Intent(requireContext(), CameraActivity::class.java)
-        startActivity(intent)
+    private fun showLoading(isLoading : Boolean) {
+        if (isLoading){
+            binding.catalogLoading.visibility = View.VISIBLE
+        }else{
+            binding.catalogLoading.visibility = View.GONE
+        }
     }
 
     override fun onDestroyView() {

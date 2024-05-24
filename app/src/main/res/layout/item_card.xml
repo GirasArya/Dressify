@@ -1,50 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp">
 
-    <LinearLayout
-        android:id="@+id/ll_itemcard"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/iv_imgClothes"
-                android:layout_width="170dp"
-                android:layout_height="170dp"
-                android:src="@drawable/ic_place_holder"
-                android:alpha="0.3"/>
-
-            <ImageView
-                android:id="@+id/iv_icFavorite"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_favorite_outline"
-                android:layout_gravity="right"
-                android:layout_marginTop="11dp"
-                android:layout_marginEnd="9dp"
-                />
-        </FrameLayout>
-        <TextView
-            android:id="@+id/tv_clotheName"
+        <LinearLayout
+            android:id="@+id/ll_itemcard"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/tv_clotheName"
-            />
-    </LinearLayout>
+            android:orientation="vertical"
+            android:padding="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.5">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/iv_imgClothes"
+                    android:layout_width="135dp"
+                    android:layout_height="135dp"
+                    android:src="@drawable/ic_place_holder" />
+
+                <ImageView
+                    android:id="@+id/iv_icFavorite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:src="@drawable/ic_favorite_outline" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/tv_clotheName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/tv_clotheName" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>
