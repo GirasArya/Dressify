@@ -8,13 +8,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.capstone.dressify.databinding.FragmentCatalogBinding
+import com.capstone.dressify.databinding.FragmentFavouriteBinding
 import com.capstone.dressify.ui.adapter.FavoriteAdapter
 import com.capstone.dressify.ui.viewmodel.FavoriteViewModel
 import com.capstone.dressify.ui.viewmodel.ViewModelFactory
 
 class FavouriteFragment : Fragment() {
 
-    private var _binding: FragmentCatalogBinding? = null
+    private var _binding: FragmentFavouriteBinding? = null
     private val binding get() = _binding
     private lateinit var adapter: FavoriteAdapter
 
@@ -31,7 +32,7 @@ class FavouriteFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentCatalogBinding.inflate(inflater, container, false)
+        _binding = FragmentFavouriteBinding.inflate(inflater, container, false)
 
         favViewModel.getAllFavorite().observe(viewLifecycleOwner) { products ->
             if (products != null) {
@@ -40,9 +41,9 @@ class FavouriteFragment : Fragment() {
         }
 
         adapter = FavoriteAdapter()
-        binding?.rvCatalogGrid?.layoutManager = GridLayoutManager(requireContext(), 2)
-        binding?.rvCatalogGrid?.setHasFixedSize(true)
-        binding?.rvCatalogGrid?.adapter = adapter
+        binding?.rvListFavorite?.layoutManager = GridLayoutManager(requireContext(), 2)
+        binding?.rvListFavorite?.setHasFixedSize(true)
+        binding?.rvListFavorite?.adapter = adapter
 
         favViewModel.getAllFavorite().observe(viewLifecycleOwner) { products ->
             if (products != null) {
