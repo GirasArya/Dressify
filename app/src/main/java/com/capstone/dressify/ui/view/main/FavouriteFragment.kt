@@ -5,9 +5,23 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.capstone.dressify.R
+import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.GridLayoutManager
+import com.capstone.dressify.databinding.FragmentCatalogBinding
+import com.capstone.dressify.ui.adapter.FavoriteAdapter
+import com.capstone.dressify.ui.viewmodel.FavoriteViewModel
+import com.capstone.dressify.ui.viewmodel.ViewModelFactory
 
 class FavouriteFragment : Fragment() {
+
+    private var _binding: FragmentCatalogBinding? = null
+    private val binding get() = _binding
+    private lateinit var adapter: FavoriteAdapter
+
+    private val favViewModel by viewModels<FavoriteViewModel> {
+        ViewModelFactory.getInstance(requireActivity().application)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -17,9 +31,33 @@ class FavouriteFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_favourite, container, false)
+        _binding = FragmentCatalogBinding.inflate(inflater, container, false)
+
+        favViewModel.getAllFavorite().observe(viewLifecycleOwner) { products ->
+            if (products != null) {
+                adapter.setListAdapter(products)
+            }
+        }
+
+        adapter = FavoriteAdapter()
+        binding?.rvCatalogGrid?.layoutManager = GridLayoutManager(requireContext(), 2)
+        binding?.rvCatalogGrid?.setHasFixedSize(true)
+        binding?.rvCatalogGrid?.adapter = adapter
+
+        favViewModel.getAllFavorite().observe(viewLifecycleOwner) { products ->
+            if (products != null) {
+                adapter.setListAdapter(products)
+                adapter.favoriteViewModel = favViewModel
+            }
+        }
+
+        return binding?.root
     }
 
 
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
 }

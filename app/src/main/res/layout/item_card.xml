@@ -37,7 +37,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"
-                    android:src="@drawable/ic_favorite_outline" />
+                    android:src="@drawable/favorite_icon_selector" />
             </FrameLayout>
 
             <TextView
