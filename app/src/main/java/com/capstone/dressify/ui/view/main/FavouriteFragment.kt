@@ -6,12 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.GridLayoutManager
 import com.capstone.dressify.databinding.FragmentCatalogBinding
 import com.capstone.dressify.databinding.FragmentFavouriteBinding
 import com.capstone.dressify.ui.adapter.FavoriteAdapter
 import com.capstone.dressify.ui.viewmodel.FavoriteViewModel
-import com.capstone.dressify.ui.viewmodel.ViewModelFactory
+import com.capstone.dressify.factory.ViewModelFactory
 
 class FavouriteFragment : Fragment() {
 
@@ -51,10 +52,20 @@ class FavouriteFragment : Fragment() {
                 adapter.favoriteViewModel = favViewModel
             }
         }
+        favViewModel.isLoading.observe(viewLifecycleOwner){
+            showLoading(it)
+        }
 
         return binding?.root
     }
 
+    private fun showLoading(isLoading: Boolean) {
+        if (isLoading) {
+            binding?.faveLoading!!.visibility = View.VISIBLE
+        } else {
+            binding?.faveLoading!!.visibility = View.GONE
+        }
+    }
 
 
     override fun onDestroy() {

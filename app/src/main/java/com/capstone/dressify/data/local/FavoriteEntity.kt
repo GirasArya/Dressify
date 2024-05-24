@@ -10,5 +10,6 @@ import kotlinx.parcelize.Parcelize
 data class FavoriteEntity(
     @PrimaryKey(autoGenerate = false)
     var title: String = "",
-    var image: String? = null
+    var image: String? = null,
+    var isCheck: Boolean = false
 ) : Parcelable

@@ -1,8 +1,9 @@
-package com.capstone.dressify.ui.viewmodel
+package com.capstone.dressify.factory
 
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.capstone.dressify.ui.viewmodel.FavoriteViewModel
 
 class ViewModelFactory private constructor(private val mApplication: Application): ViewModelProvider.NewInstanceFactory(){
     @Suppress("UNCHECKED_CAST")

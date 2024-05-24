@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.capstone.dressify.data.remote.api.ApiConfig
 import com.capstone.dressify.data.remote.response.CatalogResponse
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
@@ -16,6 +18,9 @@ class MainViewModel : ViewModel() {
     val productList = MutableLiveData<List<CatalogResponse>>()
     val _isLoading = MutableLiveData<Boolean>()
     val isLoading : LiveData<Boolean> = _isLoading
+
+    private var _isToggleChecked = MutableStateFlow(false)
+    var isToggleChecked: StateFlow<Boolean> = _isToggleChecked
 
     fun fetchProducts() {
         val client = ApiConfig.getApiService().getProducts()
@@ -36,4 +41,6 @@ class MainViewModel : ViewModel() {
             }
         })
     }
+
+
 }

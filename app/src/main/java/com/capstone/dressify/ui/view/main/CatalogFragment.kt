@@ -13,7 +13,7 @@ import com.capstone.dressify.databinding.FragmentCatalogBinding
 import com.capstone.dressify.ui.adapter.CatalogAdapter
 import com.capstone.dressify.ui.viewmodel.FavoriteViewModel
 import com.capstone.dressify.ui.viewmodel.MainViewModel
-import com.capstone.dressify.ui.viewmodel.ViewModelFactory
+import com.capstone.dressify.factory.ViewModelFactory
 import kotlinx.coroutines.launch
 
 class CatalogFragment : Fragment(), CatalogAdapter.OnFavoriteClickListener {
@@ -22,6 +22,7 @@ class CatalogFragment : Fragment(), CatalogAdapter.OnFavoriteClickListener {
     private val binding get() = _binding!!
     private lateinit var mainViewModel: MainViewModel
     private lateinit var favViewmodel: FavoriteViewModel
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
