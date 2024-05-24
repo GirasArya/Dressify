@@ -35,6 +35,9 @@ class MainActivity : AppCompatActivity() {
         binding.tvCatalogTitle.setOnClickListener {
             startCameraX()
         }
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fl_fragment, CatalogFragment())
+            .commit()
 
         supportFragmentManager.beginTransaction()
             .replace(R.id.fl_fragment, CatalogFragment())
