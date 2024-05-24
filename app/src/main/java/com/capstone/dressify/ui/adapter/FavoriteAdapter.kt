@@ -4,7 +4,6 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat.startActivity
-import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -38,7 +37,7 @@ class FavoriteAdapter: RecyclerView.Adapter<FavoriteAdapter.FavoriteViewHolder>(
                 onItemClickCallback?.onItemClicked(item, adapterPosition)
             }
             binding.ivIcFavorite.setOnClickListener {
-                favoriteViewModel.deleteFavorite(item.title ?: "", item.image ?: "")
+                favoriteViewModel.deleteFavorite(item.title, item.image ?: "")
             }
 
             // Set the initial toggle state
@@ -52,11 +51,11 @@ class FavoriteAdapter: RecyclerView.Adapter<FavoriteAdapter.FavoriteViewHolder>(
                 val intent = Intent(itemView.context, CameraActivity::class.java)
                startActivity(itemView.context, intent, null)
             }
+
             binding.ivIcFavorite.setOnClickListener {
-                item.isCheck = !item.isCheck // Toggle the state
                 notifyItemChanged(adapterPosition) // Notify the adapter to update this item
                 if (item.isCheck) {
-                    favoriteViewModel.deleteFavorite(item.title ?: "", item.image ?: "")
+                    favoriteViewModel.deleteFavorite(item.title, item.image ?: "")
                 }
             }
         }

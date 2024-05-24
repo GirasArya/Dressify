@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
 import com.capstone.dressify.data.local.FavoriteDao
 import com.capstone.dressify.data.local.FavoriteEntity
@@ -12,8 +11,6 @@ import com.capstone.dressify.data.local.FavoriteRoomDatabase
 import com.capstone.dressify.domain.repository.FavoriteRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class FavoriteViewModel(application: Application): ViewModel() {
@@ -37,7 +34,7 @@ class FavoriteViewModel(application: Application): ViewModel() {
 
     fun addFavorite(title: String, image: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            val item = FavoriteEntity(title, image)
+            val item = FavoriteEntity(title, image, isCheck = true)
             favoriteDao.addFavorite(item)
             itemFavorite = true
         }
@@ -45,7 +42,7 @@ class FavoriteViewModel(application: Application): ViewModel() {
 
     fun deleteFavorite(title: String, image: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            val item = FavoriteEntity(title, image)
+            val item = FavoriteEntity(title, image, isCheck = false)
             favoriteDao.deleteFavorite(item)
             itemFavorite = false
         }
