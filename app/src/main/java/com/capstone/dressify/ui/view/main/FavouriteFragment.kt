@@ -1,16 +1,16 @@
 package com.capstone.dressify.ui.view.main
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.capstone.dressify.databinding.FragmentFavouriteBinding
+import com.capstone.dressify.factory.ViewModelFactory
 import com.capstone.dressify.ui.adapter.FavoriteAdapter
 import com.capstone.dressify.ui.viewmodel.FavoriteViewModel
-import com.capstone.dressify.factory.ViewModelFactory
 
 class FavouriteFragment : Fragment() {
 
@@ -34,17 +34,15 @@ class FavouriteFragment : Fragment() {
         _binding = FragmentFavouriteBinding.inflate(inflater, container, false)
 
         favViewModel.getAllFavorite().observe(viewLifecycleOwner) { products ->
-            adapter.setListAdapter(products)
-            adapter.favoriteViewModel = favViewModel
-
-            binding?.tvNoFavorites?.visibility = if (products.isNullOrEmpty()) View.VISIBLE else View.GONE
-            binding?.rvListFavorite?.visibility = if (products.isNullOrEmpty()) View.GONE else View.VISIBLE
-        }
-
-        favViewModel.getAllFavorite().observe(viewLifecycleOwner) { products ->
             if (products != null) {
                 adapter.setListAdapter(products)
+                adapter.favoriteViewModel = favViewModel
             }
+
+            binding?.tvNoFavorites?.visibility =
+                if (products.isNullOrEmpty()) View.VISIBLE else View.GONE
+            binding?.rvListFavorite?.visibility =
+                if (products.isNullOrEmpty()) View.GONE else View.VISIBLE
         }
 
         adapter = FavoriteAdapter()
@@ -53,14 +51,7 @@ class FavouriteFragment : Fragment() {
         binding?.rvListFavorite?.adapter = adapter
 
 
-
-        favViewModel.getAllFavorite().observe(viewLifecycleOwner) { products ->
-            if (products != null) {
-                adapter.setListAdapter(products)
-                adapter.favoriteViewModel = favViewModel
-            }
-        }
-        favViewModel.isLoading.observe(viewLifecycleOwner){
+        favViewModel.isLoading.observe(viewLifecycleOwner) {
             showLoading(it)
         }
 
