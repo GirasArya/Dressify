@@ -3,9 +3,12 @@ package com.capstone.dressify.ui.view.camera
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.Window
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -46,6 +49,8 @@ class CameraActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityCameraBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        changeStatusBarColor("#007BFF")
 
         val productImage = intent.getStringExtra("PRODUCT_IMAGE")
         val productTitle = intent.getStringExtra("PRODUCT_TITLE")
@@ -173,6 +178,12 @@ class CameraActivity : AppCompatActivity() {
                 }
             }
         )
+    }
+
+    private fun changeStatusBarColor(color: String) {
+        val window: Window = window
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        window.statusBarColor = Color.parseColor(color)
     }
 
     companion object {

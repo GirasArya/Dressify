@@ -1,9 +1,13 @@
 package com.capstone.dressify.ui.view.main
 
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.Window
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -29,6 +33,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        changeStatusBarColor("#007BFF")
 
         bottomNavigationView = binding.bottomNavigationView
 
@@ -92,4 +98,10 @@ class MainActivity : AppCompatActivity() {
                     result.data?.getParcelableExtra(CameraActivity.EXTRA_CAMERAX_IMAGE)
             }
         }
+
+    private fun changeStatusBarColor(color: String) {
+        val window: Window = window
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        window.statusBarColor = Color.parseColor(color)
+    }
 }
