@@ -47,9 +47,14 @@ class FavoriteAdapter: RecyclerView.Adapter<FavoriteAdapter.FavoriteViewHolder>(
                 onItemClickCallback?.onItemClicked(item, adapterPosition)
             }
 
-            itemView.setOnClickListener {
+//            itemView.setOnClickListener {
+//                val intent = Intent(itemView.context, CameraActivity::class.java)
+//               startActivity(itemView.context, intent, null)
+//            }
+
+            binding.flCamera.setOnClickListener {
                 val intent = Intent(itemView.context, CameraActivity::class.java)
-               startActivity(itemView.context, intent, null)
+                startActivity(itemView.context, intent, null)
             }
 
             binding.ivIcFavorite.setOnClickListener {

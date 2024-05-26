@@ -29,7 +29,12 @@ class CatalogAdapter(
                 .into(binding.ivImgClothes)
             binding.tvClotheName.text = product.title
 
-            itemView.setOnClickListener {
+//            itemView.setOnClickListener {
+//                val intent = Intent(itemView.context, CameraActivity::class.java)
+//                startActivity(itemView.context, intent, null)
+//            }
+
+            binding.flCamera.setOnClickListener {
                 val intent = Intent(itemView.context, CameraActivity::class.java)
                 startActivity(itemView.context, intent, null)
             }
