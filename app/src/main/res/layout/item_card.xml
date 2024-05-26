@@ -1,18 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_margin="10dp">
+    android:layout_height="250dp"
+    android:layout_margin="10dp"
+    app:cardCornerRadius="10dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/card_camera_icon_bg"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/card_camera_icon"
+                android:layout_gravity="center"/>
+        </FrameLayout>
+
         <LinearLayout
             android:id="@+id/ll_itemcard"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
             android:padding="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -30,24 +50,37 @@
                     android:id="@+id/iv_imgClothes"
                     android:layout_width="135dp"
                     android:layout_height="135dp"
+                    android:background="@drawable/card_image_background"
                     android:src="@drawable/ic_place_holder" />
 
-                <ToggleButton
-                    android:id="@+id/iv_icFavorite"
-                    android:textOff=""
-                    android:textOn=""
-                    app:fabSize="normal"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_gravity="right"
-                    android:background="@drawable/toggle_favorite" />
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/fave_bg"
+                    android:layout_gravity="bottom | right">
+
+                    <ToggleButton
+                        android:id="@+id/iv_icFavorite"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/toggle_favorite"
+                        android:textOff=""
+                        android:textOn=""
+                        app:fabSize="normal"
+                        tools:ignore="TouchTargetSizeCheck" />
+                </FrameLayout>
             </FrameLayout>
+
 
             <TextView
                 android:id="@+id/tv_clotheName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/tv_clotheName" />
+                android:layout_width="80dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/tv_clotheName"
+                android:fontFamily="@font/monserrat_regular"
+                android:textStyle="bold"/>
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>
