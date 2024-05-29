@@ -8,6 +8,7 @@ import com.capstone.dressify.data.local.datastore.UserPreference
 import com.capstone.dressify.data.remote.api.ApiConfig
 import com.capstone.dressify.data.remote.api.ApiService
 import com.capstone.dressify.data.remote.response.CatalogResponse
+import com.capstone.dressify.data.remote.response.LoginResponse
 import com.capstone.dressify.domain.model.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -46,8 +47,12 @@ class UserRepository constructor(
         return pref.saveUserToken(user)
     }
 
-    suspend fun login() {
+    suspend fun isLoggedIn() {
         return pref.isLogin()
+    }
+
+    suspend fun login(email: String, password: String) : LoginResponse{
+        return apiService.login(email, password)
     }
 
     suspend fun logout() {

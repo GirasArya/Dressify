@@ -1,24 +1,29 @@
 package com.capstone.dressify.ui.view.login
 
 import android.app.Activity
-import android.content.ContentValues.TAG
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.capstone.dressify.R
+import com.capstone.dressify.data.local.datastore.UserPreference
+import com.capstone.dressify.data.local.datastore.dataStore
+import com.capstone.dressify.data.remote.response.LoginResponse
 import com.capstone.dressify.databinding.ActivityLoginBinding
+import com.capstone.dressify.domain.model.User
+import com.capstone.dressify.factory.ViewModelFactory
 import com.capstone.dressify.ui.view.main.MainActivity
 import com.capstone.dressify.ui.view.recommendation.RecommendationActivity
 import com.capstone.dressify.ui.view.register.RegisterActivity
-import com.google.android.gms.auth.api.identity.BeginSignInRequest
-import com.google.android.gms.auth.api.identity.Identity
-import com.google.android.gms.auth.api.identity.SignInClient
+import com.capstone.dressify.ui.viewmodel.LoginViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -28,17 +33,26 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.auth
+import com.google.gson.Gson
+import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     private lateinit var auth: FirebaseAuth
+    private val loginViewModel: LoginViewModel by viewModels {
+        ViewModelFactory.getInstance(application, applicationContext)
+    }
     private lateinit var googleSignInClient: GoogleSignInClient
+    private lateinit var userPreference: UserPreference
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        userPreference = UserPreference(applicationContext.dataStore)
+        val session = loginViewModel.getSession().value
         changeStatusBarColor("#007BFF")
 
         //Toolbar
@@ -48,17 +62,50 @@ class LoginActivity : AppCompatActivity() {
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_arrow)
         supportActionBar?.elevation = 0f
 
+        //tv to register
         binding.tvLoginToRegister.setOnClickListener {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
         }
 
+        //Observe login response and save session
+        loginViewModel.loginResponse.observe(this@LoginActivity) { response ->
+            if (response.error == false) {
+                Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, RecommendationActivity::class.java)
+                startActivity(intent)
+            } else {
+                Toast.makeText(this, "Login failed: ${response.message}", Toast.LENGTH_SHORT).show()
+            }
 
-        binding.btnLogin.setOnClickListener {
-            val intent = Intent(this@LoginActivity, RecommendationActivity::class.java)
-            startActivity(intent)
+            saveSession(
+                User(
+                    username = response.loginResult?.username.toString(),
+                    email = response.loginResult?.email.toString(),
+                    token = AUTH_KEY + response.loginResult?.token.toString(),
+                    isLoggedIn = true
+                )
+            )
         }
 
+        //get email and password value
+        binding.btnLogin.setOnClickListener {
+            val email = binding.edtEmailLogin.text.toString()
+            val password = binding.edtPasswordLogin.text.toString()
+//            binding.progressBarLogin.visibility = View.VISIBLE
+            lifecycleScope.launch {
+                try {
+                    val message = loginViewModel.login(email, password)
+                    Log.d(message.toString(), "message : ")
+                    loginViewModel.loginSession()
+                } catch (e : HttpException){
+                    Toast.makeText(this@LoginActivity, "Login failed : ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+
+        //Firebase Login
         binding.ivGoogleLogin.setOnClickListener {
             signIn()
         }
@@ -71,16 +118,26 @@ class LoginActivity : AppCompatActivity() {
             .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, gso)
+
         // Initialize Firebase Auth
         auth = Firebase.auth
 
+
+        if (session != null && session.isLoggedIn) {
+            moveActivity()
+            return
+        }
     }
 
+    private fun moveActivity() {
+        val intent = Intent(this@LoginActivity, RecommendationActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
     private fun signIn() {
         val signInIntent = googleSignInClient.signInIntent
         resultLauncher.launch(signInIntent)
     }
-
 
     private var resultLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -98,6 +155,7 @@ class LoginActivity : AppCompatActivity() {
             }
         }
     }
+
     private fun firebaseAuthWithGoogle(idToken: String) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         auth.signInWithCredential(credential)
@@ -114,15 +172,24 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
     }
+
     private fun updateUI(currentUser: FirebaseUser?) {
-        if (currentUser != null){
+        if (currentUser != null) {
             startActivity(Intent(this@LoginActivity, RecommendationActivity::class.java))
             finish()
         }
     }
 
+    //Save datastore session
+    private fun saveSession(user: User) {
+        lifecycleScope.launch {
+            loginViewModel.saveSession(user)
+        }
+    }
+
     companion object {
         private const val TAG = "LoginActivity"
+        private const val AUTH_KEY = " "
     }
 
     private fun changeStatusBarColor(color: String) {

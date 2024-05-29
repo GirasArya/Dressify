@@ -3,11 +3,11 @@ package com.capstone.dressify.factory
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
-import androidx.compose.ui.window.application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.capstone.dressify.di.Injection
 import com.capstone.dressify.ui.viewmodel.FavoriteViewModel
+import com.capstone.dressify.ui.viewmodel.LoginViewModel
 import com.capstone.dressify.ui.viewmodel.MainViewModel
 
 class ViewModelFactory private constructor(
@@ -22,6 +22,11 @@ class ViewModelFactory private constructor(
         } else if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return MainViewModel(Injection.provideRepository(context)) as T
+        }
+
+        else if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return LoginViewModel(Injection.provideRepository(context)) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
 

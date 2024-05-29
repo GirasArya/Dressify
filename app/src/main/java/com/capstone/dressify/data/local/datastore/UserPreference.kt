@@ -34,6 +34,8 @@ class UserPreference constructor(private val dataStore: DataStore<Preferences>) 
         }
     }
 
+
+
     suspend fun isLogin(){
         dataStore.edit { preferences ->
             preferences[LOG_KEY] = true
