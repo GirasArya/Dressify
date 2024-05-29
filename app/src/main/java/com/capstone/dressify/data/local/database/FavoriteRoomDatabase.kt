@@ -1,4 +1,4 @@
-package com.capstone.dressify.data.local
+package com.capstone.dressify.data.local.database
 
 import android.content.Context
 import androidx.room.Database

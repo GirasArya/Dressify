@@ -1,4 +1,4 @@
-package com.capstone.dressify.data.local
+package com.capstone.dressify.data.local.database
 
 import android.os.Parcelable
 import androidx.room.Entity

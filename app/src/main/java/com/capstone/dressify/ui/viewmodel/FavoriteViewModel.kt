@@ -5,9 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
-import com.capstone.dressify.data.local.FavoriteDao
-import com.capstone.dressify.data.local.FavoriteEntity
-import com.capstone.dressify.data.local.FavoriteRoomDatabase
+import com.capstone.dressify.data.local.database.FavoriteDao
+import com.capstone.dressify.data.local.database.FavoriteEntity
+import com.capstone.dressify.data.local.database.FavoriteRoomDatabase
 import com.capstone.dressify.domain.repository.FavoriteRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

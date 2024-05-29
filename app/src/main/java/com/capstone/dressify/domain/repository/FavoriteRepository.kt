@@ -2,9 +2,9 @@ package com.capstone.dressify.domain.repository
 
 import android.app.Application
 import androidx.lifecycle.LiveData
-import com.capstone.dressify.data.local.FavoriteDao
-import com.capstone.dressify.data.local.FavoriteEntity
-import com.capstone.dressify.data.local.FavoriteRoomDatabase
+import com.capstone.dressify.data.local.database.FavoriteDao
+import com.capstone.dressify.data.local.database.FavoriteEntity
+import com.capstone.dressify.data.local.database.FavoriteRoomDatabase
 
 class FavoriteRepository(application: Application) {
     private val favoriteDao: FavoriteDao

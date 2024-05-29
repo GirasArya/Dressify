@@ -7,7 +7,7 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.capstone.dressify.data.local.FavoriteEntity
+import com.capstone.dressify.data.local.database.FavoriteEntity
 import com.capstone.dressify.databinding.ItemCardBinding
 import com.capstone.dressify.helpers.FavoriteItemCallback
 import com.capstone.dressify.ui.view.camera.CameraActivity

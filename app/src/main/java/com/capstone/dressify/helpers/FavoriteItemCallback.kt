@@ -1,7 +1,7 @@
 package com.capstone.dressify.helpers
 
 import androidx.recyclerview.widget.DiffUtil
-import com.capstone.dressify.data.local.FavoriteEntity
+import com.capstone.dressify.data.local.database.FavoriteEntity
 
 class FavoriteItemCallback(private val oldFavlist: List<FavoriteEntity>, private val newFavList: List<FavoriteEntity>): DiffUtil.Callback() {
     override fun getOldListSize(): Int {
