@@ -14,7 +14,7 @@ import com.capstone.dressify.ui.view.camera.CameraActivity
 import com.capstone.dressify.ui.viewmodel.FavoriteViewModel
 
 class CatalogAdapter(
-    private val productList: List<CatalogResponse>,
+    private var productList: List<CatalogResponse>,
     private val favoriteViewModel: FavoriteViewModel,
     private val lifecycleOwner: LifecycleOwner,
     private val onFavoriteClickListener: OnFavoriteClickListener
@@ -74,6 +74,11 @@ class CatalogAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CatalogViewHolder {
         val binding = ItemCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CatalogViewHolder(binding)
+    }
+
+    fun updateProductList(newProducts: List<CatalogResponse>) {
+        productList = newProducts
+        notifyDataSetChanged() // Refresh the adapter
     }
 
     override fun getItemCount(): Int = productList.size

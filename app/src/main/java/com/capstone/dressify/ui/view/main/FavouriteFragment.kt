@@ -19,7 +19,7 @@ class FavouriteFragment : Fragment() {
     private lateinit var adapter: FavoriteAdapter
 
     private val favViewModel by viewModels<FavoriteViewModel> {
-        ViewModelFactory.getInstance(requireActivity().application)
+        ViewModelFactory.getInstance(requireActivity().application, requireContext().applicationContext)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

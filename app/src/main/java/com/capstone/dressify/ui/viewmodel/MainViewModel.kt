@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.capstone.dressify.data.remote.api.ApiConfig
 import com.capstone.dressify.data.remote.response.CatalogResponse
+import com.capstone.dressify.domain.repository.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -14,33 +15,24 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class MainViewModel : ViewModel() {
-    val productList = MutableLiveData<List<CatalogResponse>>()
+class MainViewModel(private val repository: UserRepository) : ViewModel() {
+    private val _productList = MutableLiveData<List<CatalogResponse>>()
+    val productList: LiveData<List<CatalogResponse>> get() = _productList
     val _isLoading = MutableLiveData<Boolean>()
-    val isLoading : LiveData<Boolean> = _isLoading
-
-    private var _isToggleChecked = MutableStateFlow(false)
-    var isToggleChecked: StateFlow<Boolean> = _isToggleChecked
+    val isLoading: LiveData<Boolean> = _isLoading
 
     fun fetchProducts() {
-        val client = ApiConfig.getApiService().getProducts()
-        _isLoading.value = true
-        client.enqueue(object : Callback<List<CatalogResponse>> {
-            override fun onResponse(
-                call: Call<List<CatalogResponse>>,
-                response: Response<List<CatalogResponse>>
-            ) {
-                if (response.isSuccessful) {
-                    _isLoading.value = false
-                    productList.value = response.body()
-                }
+        viewModelScope.launch {
+            _isLoading.value = true // Show loading indicator
+            try {
+                val productList = repository.getProductCatalog()
+                _productList.value = productList
+            } catch (e: Exception) {
+                // Handle errors (e.g., network issues, parsing errors)
+                Log.e("MainViewModel", "Error fetching products: ${e.message}")
+            } finally {
+                _isLoading.value = false // Hide loading indicator
             }
-
-            override fun onFailure(call: Call<List<CatalogResponse>>, t: Throwable) {
-                Log.e("THIS", "onFailure: ${t.message}")
-            }
-        })
+        }
     }
-
-
 }

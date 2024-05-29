@@ -69,6 +69,7 @@ dependencies {
 
     //Room
     implementation("androidx.room:room-runtime:2.6.1")
+    implementation(libs.androidx.ui.desktop)
     ksp("androidx.room:room-compiler:2.6.1")
 
     // Fragment and navigation
