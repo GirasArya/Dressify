@@ -10,6 +10,7 @@ import com.capstone.dressify.data.remote.api.ApiService
 import com.capstone.dressify.data.remote.response.CatalogResponse
 import com.capstone.dressify.data.remote.response.LoginResponse
 import com.capstone.dressify.domain.model.User
+import com.google.gson.JsonObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Call
@@ -51,9 +52,19 @@ class UserRepository constructor(
         return pref.isLogin()
     }
 
-    suspend fun login(email: String, password: String) : LoginResponse{
-        return apiService.login(email, password)
+//    suspend fun login(email: String, password: String) : LoginResponse {
+//        return apiService.login(email, password)
+//    }
+
+    suspend fun login(email : String, password : String) : LoginResponse {
+        val param = JsonObject().apply {
+            addProperty("email", email)
+            addProperty("password", password)
+        }
+        var response = apiService.login(param)
+        return response
     }
+
 
     suspend fun logout() {
         return pref.clearUserToken()
