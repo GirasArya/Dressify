@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.viewModels
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.capstone.dressify.R
@@ -14,7 +13,6 @@ import com.capstone.dressify.databinding.FragmentProfileBinding
 import com.capstone.dressify.factory.ViewModelFactory
 import com.capstone.dressify.ui.view.landing.LandingActivity
 import com.capstone.dressify.ui.viewmodel.LoginViewModel
-import com.capstone.dressify.ui.viewmodel.MainViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
@@ -26,8 +24,6 @@ class ProfileFragment : Fragment() {
     private val loginViewModel: LoginViewModel by viewModels {
         ViewModelFactory.getInstance(requireActivity().application, requireContext().applicationContext)
     }
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -40,6 +36,16 @@ class ProfileFragment : Fragment() {
 
         binding.btnLogout.setOnClickListener {
             signOut()
+        }
+
+        loginViewModel.getSession().observe(viewLifecycleOwner) { user ->
+            user?.let {
+                if (it.isLoggedIn) {
+                    binding.tvProfileEmail.text = it.email
+                    binding.tvProfileUsername.text = it.username
+                    binding.profileLoading.visibility = View.GONE
+                }
+            }
         }
 
         return binding.root
@@ -66,6 +72,7 @@ class ProfileFragment : Fragment() {
             binding.tvProfileUsername.text = displayName ?: "Username not available"
             binding.profileLoading.visibility = View.GONE
         }
+
     }
 
     private fun signOut() {

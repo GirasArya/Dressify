@@ -31,7 +31,7 @@ class MainViewModel(private val repository: UserRepository) : ViewModel() {
                 // Handle errors (e.g., network issues, parsing errors)
                 Log.e("MainViewModel", "Error fetching products: ${e.message}")
             } finally {
-                _isLoading.value = false // Hide loading indicator (Modify if success)
+                _isLoading.value = true // Hide loading indicator (Modify if success)
             }
         }
     }
