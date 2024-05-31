@@ -3,7 +3,6 @@ package com.capstone.dressify.ui.view.main
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -83,25 +82,27 @@ class MainActivity : AppCompatActivity() {
         auth = Firebase.auth
         val firebaseUser = auth.currentUser
 
-        // Not signed in, launch the Login activity
-//        if (firebaseUser == null) {
-//            Toast.makeText(this, "Hayo blom login ya", Toast.LENGTH_SHORT).show()
-//           startActivity(Intent(this, LandingActivity::class.java))
-//        }
         loginViewModel.getSession().observe(this) { user ->
             user?.let {
-                if (it.isLoggedIn) {
-                    token = it.token
-                    Log.d("MainActivity", "Token: $token")
+                if (it.isLoggedIn || firebaseUser != null) {
+                    //get session token of firebase user and save it into local datastore
+                    if (firebaseUser != null) {
+                        firebaseUser?.getIdToken(true)
+                            ?.addOnSuccessListener { result ->
+                                token = result.token!!
+                                Log.d("FirebaseToken", "Token: $token")
+                            }
+                    } else {
+                        //get session token from local datastore
+                        token = it.token
+                        Log.d("MainActivity", "Token: $token")
+                    }
+
                 } else {
                     val intent = Intent(this@MainActivity, LandingActivity::class.java)
                     startActivity(intent)
                     finish()
                 }
-            } ?: run {
-                val intent = Intent(this@MainActivity, LandingActivity::class.java)
-                startActivity(intent)
-                finish()
             }
         }
     }
