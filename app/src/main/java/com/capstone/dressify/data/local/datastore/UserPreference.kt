@@ -26,7 +26,7 @@ class UserPreference constructor(private val dataStore: DataStore<Preferences>) 
     fun getToken(): Flow<User> {
         return dataStore.data.map { preferences ->
             User(
-                preferences[NAME_KEY] ?:"",
+                preferences[NAME_KEY] ?: "",
                 preferences[EMAIL_KEY] ?: "",
                 preferences[TOKEN_KEY] ?: "",
                 preferences[LOG_KEY] ?: false
@@ -48,8 +48,7 @@ class UserPreference constructor(private val dataStore: DataStore<Preferences>) 
     }
 
 
-
-    suspend fun isLogin(){
+    suspend fun isLogin() {
         dataStore.edit { preferences ->
             preferences[LOG_KEY] = true
         }
@@ -60,7 +59,6 @@ class UserPreference constructor(private val dataStore: DataStore<Preferences>) 
             preferences.clear()
         }
     }
-
 
 
     companion object {

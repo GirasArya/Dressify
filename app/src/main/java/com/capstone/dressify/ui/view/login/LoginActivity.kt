@@ -86,6 +86,7 @@ class  LoginActivity : AppCompatActivity() {
                     isLoggedIn = true
                 )
             )
+
         }
 
         //get email and password value
@@ -185,6 +186,7 @@ class  LoginActivity : AppCompatActivity() {
         lifecycleScope.launch {
             loginViewModel.saveSession(user)
         }
+        Log.d("SESSION", "Login session saved")
     }
 
     companion object {

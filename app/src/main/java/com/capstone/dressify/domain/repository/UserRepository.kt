@@ -64,26 +64,16 @@ class UserRepository constructor(
             addProperty("password", password)
         }
         var response = apiService.register(param)
+        return response
+    }
         
 //    suspend fun login(email: String, password: String) : LoginResponse {
 //        return apiService.login(email, password)
 //    }
 
-    suspend fun login(email : String, password : String) : LoginResponse {
-        val param = JsonObject().apply {
-            addProperty("email", email)
-            addProperty("password", password)
-        }
-        var response = apiService.login(param)
-        return response
-    }
-
-
     suspend fun logout() {
         return pref.clearUserToken()
     }
-
-
 
     companion object {
         @Volatile

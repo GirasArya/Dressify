@@ -41,10 +41,6 @@ class CatalogFragment : Fragment(), CatalogAdapter.OnFavoriteClickListener {
             ViewModelFactory.getInstance(requireActivity().application, requireContext().applicationContext)
         }
 
-        lifecycleScope.launch {
-            mainViewModel.fetchProducts()
-        }
-
         catalogAdapter = CatalogAdapter(emptyList(), favViewmodel, viewLifecycleOwner, this) // Initialize with empty list
         binding.rvCatalogGrid.adapter = catalogAdapter
         binding.rvCatalogGrid.layoutManager = GridLayoutManager(requireContext(), 2)
