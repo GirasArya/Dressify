@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.main.ProfileFragment">
+    tools:context=".ui.view.main.ProfileFragment">
 
 
     <TextView
@@ -136,12 +136,24 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/itim_regular"
         android:text="@string/tv_btnLogout"
+        android:backgroundTint="@color/btn_primary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ll_profileEmail"
         app:layout_constraintVertical_bias="0.32" />
+
+    <ProgressBar
+        android:id="@+id/profile_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

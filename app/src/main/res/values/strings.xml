@@ -56,5 +56,5 @@
     <string name="tv_clotheName">Clothe Name</string>
     <string name="tv_logintextAccount">Don\'t have an account?</string>
     <string name="tv_logintoregister">Register</string>
-
+    <string name="errorPassword">Your password must be at least 6 characters long</string>
 </resources>
