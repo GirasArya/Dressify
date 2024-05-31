@@ -34,6 +34,19 @@ class UserPreference constructor(private val dataStore: DataStore<Preferences>) 
         }
     }
 
+    fun getUserProfile(): Flow<Pair<String, String>> {
+        return dataStore.data.map { preferences ->
+            Pair(preferences[NAME_KEY] ?: "", preferences[EMAIL_KEY] ?: "")
+        }
+    }
+
+    suspend fun saveUserProfile(name: String, email: String) {
+        dataStore.edit { preferences ->
+            preferences[NAME_KEY] = name
+            preferences[EMAIL_KEY] = email
+        }
+    }
+
 
 
     suspend fun isLogin(){
@@ -47,6 +60,8 @@ class UserPreference constructor(private val dataStore: DataStore<Preferences>) 
             preferences.clear()
         }
     }
+
+
 
     companion object {
         @Volatile

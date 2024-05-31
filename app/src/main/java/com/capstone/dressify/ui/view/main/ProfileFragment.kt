@@ -6,26 +6,26 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.Toast
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.fragment.findNavController
+import androidx.activity.viewModels
+import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.capstone.dressify.R
 import com.capstone.dressify.databinding.FragmentProfileBinding
+import com.capstone.dressify.factory.ViewModelFactory
 import com.capstone.dressify.ui.view.landing.LandingActivity
-import com.capstone.dressify.ui.view.login.LoginActivity
+import com.capstone.dressify.ui.viewmodel.LoginViewModel
+import com.capstone.dressify.ui.viewmodel.MainViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
-import kotlinx.coroutines.launch
 
 class ProfileFragment : Fragment() {
 
     private lateinit var binding: FragmentProfileBinding
-    private lateinit var auth: FirebaseAuth
+    private lateinit var  auth: FirebaseAuth
+    private val loginViewModel: LoginViewModel by viewModels {
+        ViewModelFactory.getInstance(requireActivity().application, requireContext().applicationContext)
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,6 +70,7 @@ class ProfileFragment : Fragment() {
 
     private fun signOut() {
         auth.signOut()
+        loginViewModel.logout()
         startActivity(Intent(this@ProfileFragment.requireContext(), LandingActivity::class.java))
     }
 }

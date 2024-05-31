@@ -1,21 +1,17 @@
 package com.capstone.dressify.domain.repository
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import com.capstone.dressify.data.local.datastore.UserPreference
-import com.capstone.dressify.data.remote.api.ApiConfig
 import com.capstone.dressify.data.remote.api.ApiService
 import com.capstone.dressify.data.remote.response.CatalogResponse
 import com.capstone.dressify.data.remote.response.LoginResponse
+import com.capstone.dressify.data.remote.response.RegisterResponse
 import com.capstone.dressify.domain.model.User
 import com.google.gson.JsonObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class UserRepository constructor(
     private val apiService: ApiService,
@@ -52,6 +48,23 @@ class UserRepository constructor(
         return pref.isLogin()
     }
 
+    suspend fun login(email: String, password: String) : LoginResponse{
+        val param = JsonObject().apply {
+            addProperty("email", email)
+            addProperty("password", password)
+        }
+        var response = apiService.login(param)
+        return response
+    }
+
+    suspend fun register(email: String, username: String, password: String): RegisterResponse {
+        val param = JsonObject().apply {
+            addProperty("email", email)
+            addProperty("username", username)
+            addProperty("password", password)
+        }
+        var response = apiService.register(param)
+        
 //    suspend fun login(email: String, password: String) : LoginResponse {
 //        return apiService.login(email, password)
 //    }
@@ -69,6 +82,7 @@ class UserRepository constructor(
     suspend fun logout() {
         return pref.clearUserToken()
     }
+
 
 
     companion object {

@@ -38,7 +38,7 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
 
-class LoginActivity : AppCompatActivity() {
+class  LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     private lateinit var auth: FirebaseAuth
     private val loginViewModel: LoginViewModel by viewModels {
@@ -90,8 +90,8 @@ class LoginActivity : AppCompatActivity() {
 
         //get email and password value
         binding.btnLogin.setOnClickListener {
-            val email = binding.edtEmailLogin.text.toString()
-            val password = binding.edtPasswordLogin.text.toString()
+            val email = binding.edtEmailLogin.text.toString().trim()
+            val password = binding.edtPasswordLogin.text.toString().trim()
 //            binding.progressBarLogin.visibility = View.VISIBLE
             lifecycleScope.launch {
                 try {

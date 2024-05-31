@@ -46,7 +46,7 @@
         app:layout_constraintVertical_bias="0.0"
         app:passwordToggleEnabled="true">
 
-        <com.google.android.material.textfield.TextInputEditText
+        <com.capstone.dressify.ui.customview.ValidationPassword
             android:id="@+id/edt_passwordLogin"
             android:layout_width="325dp"
             android:layout_height="wrap_content"
@@ -162,7 +162,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tv_loginTitle"
         app:layout_constraintVertical_bias="0.0">
 
-        <com.google.android.material.textfield.TextInputEditText
+        <com.capstone.dressify.ui.customview.ValidationEmail
             android:id="@+id/edt_emailLogin"
             android:layout_width="325dp"
             android:layout_height="wrap_content"

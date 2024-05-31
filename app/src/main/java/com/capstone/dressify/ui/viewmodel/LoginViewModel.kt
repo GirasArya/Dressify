@@ -20,6 +20,7 @@ class LoginViewModel(private val repository: UserRepository) : ViewModel() {
         _loginResponse.postValue(response)
     }
 
+
     //save user session
     suspend fun saveSession(user: User) {
         repository.saveSession(user)
@@ -36,4 +37,12 @@ class LoginViewModel(private val repository: UserRepository) : ViewModel() {
     fun getSession(): LiveData<User> {
         return repository.getSession()
     }
+
+    fun logout() {
+        viewModelScope.launch {
+            repository.logout()
+        }
+    }
+
+
 }
