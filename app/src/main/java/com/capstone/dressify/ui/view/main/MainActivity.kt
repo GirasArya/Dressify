@@ -5,19 +5,20 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.net.toUri
 import com.capstone.dressify.R
 import com.capstone.dressify.databinding.ActivityMainBinding
+import com.capstone.dressify.factory.ViewModelFactory
 import com.capstone.dressify.ui.view.camera.CameraActivity
-import com.capstone.dressify.ui.view.camera.CameraActivity.Companion.CAMERAX_RESULT
 import com.capstone.dressify.ui.view.landing.LandingActivity
-import com.capstone.dressify.ui.view.login.LoginActivity
+import com.capstone.dressify.ui.viewmodel.LoginViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
@@ -28,6 +29,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var bottomNavigationView: BottomNavigationView
     private var currentImageUri: Uri? = null
     private lateinit var auth: FirebaseAuth
+    private val loginViewModel: LoginViewModel by viewModels {
+        ViewModelFactory.getInstance(application, applicationContext)
+    }
+    private var token = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,9 +84,25 @@ class MainActivity : AppCompatActivity() {
         val firebaseUser = auth.currentUser
 
         // Not signed in, launch the Login activity
-        if (firebaseUser == null) {
-            Toast.makeText(this, "Hayo blom login ya", Toast.LENGTH_SHORT).show()
-           startActivity(Intent(this, LandingActivity::class.java))
+//        if (firebaseUser == null) {
+//            Toast.makeText(this, "Hayo blom login ya", Toast.LENGTH_SHORT).show()
+//           startActivity(Intent(this, LandingActivity::class.java))
+//        }
+        loginViewModel.getSession().observe(this) { user ->
+            user?.let {
+                if (it.isLoggedIn) {
+                    token = it.token
+                    Log.d("MainActivity", "Token: $token")
+                } else {
+                    val intent = Intent(this@MainActivity, LandingActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                }
+            } ?: run {
+                val intent = Intent(this@MainActivity, LandingActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
         }
     }
 

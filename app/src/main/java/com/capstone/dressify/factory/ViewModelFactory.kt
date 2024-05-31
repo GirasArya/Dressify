@@ -9,6 +9,7 @@ import com.capstone.dressify.di.Injection
 import com.capstone.dressify.ui.viewmodel.FavoriteViewModel
 import com.capstone.dressify.ui.viewmodel.LoginViewModel
 import com.capstone.dressify.ui.viewmodel.MainViewModel
+import com.capstone.dressify.ui.viewmodel.RegisterViewModel
 
 class ViewModelFactory private constructor(
     private val mApplication: Application,
@@ -22,8 +23,10 @@ class ViewModelFactory private constructor(
         } else if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return MainViewModel(Injection.provideRepository(context)) as T
+        } else if (modelClass.isAssignableFrom(RegisterViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return RegisterViewModel(Injection.provideRepository(context)) as T
         }
-
         else if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return LoginViewModel(Injection.provideRepository(context)) as T

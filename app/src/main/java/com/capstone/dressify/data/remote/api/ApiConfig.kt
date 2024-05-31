@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 object ApiConfig {
     private const val BASE_URL = "https://login-register-dressify.et.r.appspot.com/"
 
-    fun getApiService(): ApiService {
+    fun getApiService(token: String): ApiService {
         val loggingInterceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
         val client = OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
