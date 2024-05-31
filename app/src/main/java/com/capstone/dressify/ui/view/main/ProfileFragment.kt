@@ -64,7 +64,7 @@ class ProfileFragment : Fragment() {
 
             Glide.with(this)
                 .load(profileUser)
-                .placeholder(R.drawable.ic_avatar_profile)
+                .placeholder(R.drawable.avatar_profile)
                 .circleCrop()
                 .into(binding.ivAvatarProfile)
 
