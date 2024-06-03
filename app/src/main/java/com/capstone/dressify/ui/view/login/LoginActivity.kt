@@ -91,16 +91,18 @@ class  LoginActivity : AppCompatActivity() {
 
         //get email and password value
         binding.btnLogin.setOnClickListener {
-            val email = binding.edtEmailLogin.text.toString().trim()
-            val password = binding.edtPasswordLogin.text.toString().trim()
+            if (isInputValid()) {
+                val email = binding.edtEmailLogin.text.toString().trim()
+                val password = binding.edtPasswordLogin.text.toString().trim()
 //            binding.progressBarLogin.visibility = View.VISIBLE
-            lifecycleScope.launch {
-                try {
-                    val message = loginViewModel.login(email, password)
-                    Log.d(message.toString(), "message : ")
-                    loginViewModel.loginSession()
-                } catch (e : HttpException){
-                    Toast.makeText(this@LoginActivity, "Login failed : ${e.message}", Toast.LENGTH_SHORT).show()
+                lifecycleScope.launch {
+                    try {
+                        val message = loginViewModel.login(email, password)
+                        Log.d(message.toString(), "message : ")
+                        loginViewModel.loginSession()
+                    } catch (e : HttpException){
+                        Toast.makeText(this@LoginActivity, "Login failed : ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
@@ -192,6 +194,29 @@ class  LoginActivity : AppCompatActivity() {
     companion object {
         private const val TAG = "LoginActivity"
         private const val AUTH_KEY = " "
+    }
+
+    private fun isInputValid(): Boolean {
+        var isValid = true
+        if (binding.edtEmailLogin.text.toString().trim().isEmpty()) {
+            binding.edtEmailLogin.error = "Email is required"
+            isValid = false
+        } else {
+            val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
+            if (!binding.edtEmailLogin.text.toString().trim().matches(emailPattern.toRegex())) {
+                binding.edtEmailLogin.error = "Invalid email format"
+                isValid = false
+            }
+        }
+
+        if (binding.edtPasswordLogin.text.toString().trim().isEmpty()) {
+            binding.edtPasswordLogin.setError("Passwords is required", null)
+            isValid = false
+        } else {
+            binding.edtPasswordLogin.error = null
+        }
+
+        return isValid
     }
 
     private fun changeStatusBarColor(color: String) {

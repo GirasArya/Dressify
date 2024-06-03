@@ -121,7 +121,7 @@
         app:passwordToggleEnabled="true">
 
 
-        <com.capstone.dressify.ui.customview.ValidationConfirmPassword
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edt_registerConfirmPassword"
             android:layout_width="325dp"
             android:layout_height="wrap_content"
