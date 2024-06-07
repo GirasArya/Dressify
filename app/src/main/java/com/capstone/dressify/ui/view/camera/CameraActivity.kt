@@ -22,6 +22,7 @@ import androidx.core.content.ContextCompat
 import com.capstone.dressify.databinding.ActivityCameraBinding
 import com.capstone.dressify.helpers.createCustomTempFile
 import com.capstone.dressify.helpers.getImageUri
+import com.capstone.dressify.ui.view.imagedetail.ImageDetailActivity
 import com.capstone.dressify.ui.view.main.MainActivity
 
 class CameraActivity : AppCompatActivity() {
@@ -77,7 +78,6 @@ class CameraActivity : AppCompatActivity() {
             cameraSelector =
                 if (cameraSelector.equals(CameraSelector.DEFAULT_BACK_CAMERA)) CameraSelector.DEFAULT_FRONT_CAMERA
                 else CameraSelector.DEFAULT_BACK_CAMERA
-
             startCamera()
         }
 
@@ -95,9 +95,15 @@ class CameraActivity : AppCompatActivity() {
         ActivityResultContracts.TakePicture()
     ) { isSuccess ->
         if (isSuccess) {
-            TODO()
+            currentImageUri?.let { uri ->
+                val intent = Intent(this@CameraActivity, ImageDetailActivity::class.java).apply {
+                    putExtra(IMAGE_URI, uri.toString())
+                }
+                startActivity(intent)
+            }
         }
     }
+
 
     //Gallery
     private fun startGallery() {
@@ -109,6 +115,10 @@ class CameraActivity : AppCompatActivity() {
     ) { uri: Uri? ->
         if (uri != null) {
             currentImageUri = uri
+            val intent = Intent(this@CameraActivity, ImageDetailActivity::class.java).apply {
+                putExtra(IMAGE_URI, currentImageUri.toString())
+            }
+            startActivity(intent)
         } else {
             Log.d("Photo Picker", "No media selected")
         }
@@ -180,6 +190,7 @@ class CameraActivity : AppCompatActivity() {
         )
     }
 
+
     private fun changeStatusBarColor(color: String) {
         val window: Window = window
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
@@ -191,5 +202,6 @@ class CameraActivity : AppCompatActivity() {
         private const val TAG = "CameraActivity"
         const val EXTRA_CAMERAX_IMAGE = "CameraX Image"
         const val CAMERAX_RESULT = 200
+        const val IMAGE_URI = "image_uri"
     }
 }
