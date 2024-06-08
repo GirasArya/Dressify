@@ -9,6 +9,8 @@
         tools:ignore="UnsupportedTvHardware" />
 
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
@@ -32,9 +34,12 @@
         android:theme="@style/Theme.Dressify"
         tools:targetApi="31">
         <activity
+            android:name=".ui.view.imagedetail.ImageDetailActivity"
+            android:parentActivityName=".ui.view.camera.CameraActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.view.camera.CameraActivity"
             android:exported="false" />
-
         <activity
             android:name=".ui.view.login.LoginActivity"
             android:exported="false"
@@ -55,7 +60,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".ui.view.recommendation.RecommendationActivity"
             android:exported="false" />
@@ -68,10 +72,7 @@
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
-        </provider>
-
-
-        <!--suppress AndroidDomInspection -->
+        </provider> <!-- suppress AndroidDomInspection -->
         <service
             android:name="com.google.android.gms.metadata.ModuleDependencies"
             android:enabled="false"
@@ -80,6 +81,7 @@
             <intent-filter>
                 <action android:name="com.google.android.gms.metadata.MODULE_DEPENDENCIES" />
             </intent-filter>
+
             <meta-data
                 android:name="photopicker_activity:0:required"
                 android:value="" />

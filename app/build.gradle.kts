@@ -44,9 +44,10 @@ android {
     //ViewBinding
     buildFeatures{
         viewBinding = true
+        mlModelBinding = true
     }
-
 }
+
 
 dependencies {
     //Glide
@@ -71,6 +72,8 @@ dependencies {
     //Room
     implementation("androidx.room:room-runtime:2.6.1")
     implementation(libs.androidx.ui.desktop)
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.play.services.vision.common)
     ksp("androidx.room:room-compiler:2.6.1")
 
     // Fragment and navigation
@@ -83,6 +86,9 @@ dependencies {
     implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
     implementation("androidx.camera:camera-view:$cameraxVersion")
 
+
+    // Viewpager and dots indicator
+    implementation("me.relex:circleindicator:2.1.6")
 
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
@@ -98,6 +104,9 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.leanback)
     implementation(libs.glide)
+    implementation(libs.tensorflow.lite.support)
+    implementation(libs.tensorflow.lite.metadata)
+    implementation(libs.tensorflow.lite.gpu)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
