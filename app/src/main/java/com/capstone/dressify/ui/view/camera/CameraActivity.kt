@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.capstone.dressify.ui.view.camera
 
 import android.Manifest
@@ -5,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -16,19 +19,19 @@ import android.util.Size
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
-import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
+import com.capstone.dressify.R
 import com.capstone.dressify.databinding.ActivityCameraBinding
 import com.capstone.dressify.helpers.createCustomTempFile
 import com.capstone.dressify.helpers.getImageUri
@@ -52,6 +55,8 @@ class CameraActivity : AppCompatActivity() {
     private var cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var interpreter: Interpreter
+    private lateinit var clothesBitmap: Bitmap
+    private lateinit var boundingBoxOverlay: BoundingBoxOverlay
     private fun allPermissionGranted() =
         ContextCompat.checkSelfPermission(
             this, REQUIRED_PERMISSION
@@ -74,12 +79,23 @@ class CameraActivity : AppCompatActivity() {
         cameraExecutor = Executors.newSingleThreadExecutor()
 
         val model = "final_ar_float32.tflite"
-        interpreter = Interpreter(loadModelFile(this, model)) ; Interpreter.Options().addDelegate(GpuDelegate())
+        interpreter = Interpreter(loadModelFile(this, model)); Interpreter.Options()
+            .addDelegate(GpuDelegate())
+        // Load both models (object detection and clothes overlay)
+        interpreter =
+            Interpreter(loadModelFile(this, "final_ar_float32.tflite")) // Object detection model
+        clothesBitmap = BitmapFactory.decodeResource(resources, R.drawable.test_img)
+        boundingBoxOverlay = BoundingBoxOverlay(this)
+        val overlayLayoutParams = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT
+        )
+        boundingBoxOverlay.layoutParams = overlayLayoutParams
 
+
+        binding.pvCameraX.overlay.add(boundingBoxOverlay)
         changeStatusBarColor("#007BFF")
 
-        val productImage = intent.getStringExtra("PRODUCT_IMAGE")
-        val productTitle = intent.getStringExtra("PRODUCT_TITLE")
 
         if (!allPermissionGranted()) {
             requestPermissionLauncher.launch(REQUIRED_PERMISSION)
@@ -106,6 +122,28 @@ class CameraActivity : AppCompatActivity() {
 
     }
 
+    private fun overlayClothes(frame: Bitmap, detections: List<RectF>): Bitmap {
+        val mutableBitmap = frame.copy(Bitmap.Config.ARGB_8888, true)
+        val canvas = Canvas(mutableBitmap)
+        val paint = Paint()
+        paint.style = Paint.Style.STROKE
+        paint.strokeWidth = 5f
+        paint.color = Color.RED
+
+        detections.forEach { box ->
+            // Adjust clothing image to match the box dimensions (you'll need to figure out the appropriate scaling logic)
+            val resizedClothes = Bitmap.createScaledBitmap(
+                clothesBitmap,
+                box.width().toInt(),
+                box.height().toInt(),
+                false
+            )
+            canvas.drawBitmap(resizedClothes, null, box, paint) // Draw the clothing on the canvas
+        }
+
+        return mutableBitmap
+    }
+
     private fun startCamera(interpreter: Interpreter) {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
 
@@ -119,52 +157,44 @@ class CameraActivity : AppCompatActivity() {
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build()
 
-            val boundingBoxOverlay = BoundingBoxOverlay(this)
-            binding.pvCameraX.overlay.add(boundingBoxOverlay)
 
             imageAnalysis.setAnalyzer(cameraExecutor) { imageProxy ->
-                val rotationDegrees = imageProxy.imageInfo.rotationDegrees
                 val image = imageProxy.toBitmap()
+
                 if (image != null) {
-                    // Resize and convert to float32 RGB
+                    // Object Detection
                     val resizedBitmap = Bitmap.createScaledBitmap(image, 640, 640, false)
                     val tensorImage = TensorImage(DataType.FLOAT32)
                     tensorImage.load(resizedBitmap)
 
-                    // Ensure the tensor buffer is correctly sized
-                    val inputBuffer = tensorImage.buffer
-
-                    // Check input buffer size and model input size
-                    val expectedSize = 640 * 640 * 3 * 4 // 640x640 pixels, 3 channels, 4 bytes per float
-                    if (inputBuffer.remaining() != expectedSize) {
-                        throw IllegalArgumentException("Incorrect input buffer size: ${inputBuffer.remaining()} bytes, expected: $expectedSize bytes")
-                    }
-
-                    // Prepare input and output arrays for the interpreter
-                    val inputArray = arrayOf(inputBuffer)
+                    val inputArray = arrayOf(tensorImage.buffer)
+                    val outputArray = Array(1) { Array(11) { FloatArray(8400) } }
                     val outputMap = HashMap<Int, Any>()
-                    outputMap[0] = Array(1) { Array(11) { FloatArray(8400) } }
+                    outputMap[0] = outputArray
 
-                    // Run inference
                     interpreter.runForMultipleInputsOutputs(inputArray, outputMap)
 
-                    // Process outputs and draw bounding boxes (update on UI thread)
-                    val outputArray = outputMap[0] as Array<Array<FloatArray>>
+                    // Convert object detection output to bounding boxes (fixed)
                     val boundingBoxes = mutableListOf<RectF>()
-                    for (i in 0 until 8400) {
-                        val result = outputArray[0].map { it[i] }
-                        val x = result[0] * resizedBitmap.width
-                        val y = result[1] * resizedBitmap.height
-                        val w = result[2] * resizedBitmap.width
-                        val h = result[3] * resizedBitmap.height
-                        val confidence = result[4]
-                        // Assuming result[5] to result[10] are class probabilities or other attributes
-                        if (confidence > 0.5) { // Threshold for confidence
+                    val results = outputArray[0][0] // Access results directly from the first output set
+                    for (i in 0 until results.size step 5) { // Iterate in steps of 5, assuming 5 values per detection
+                        val confidence = results[i + 4]
+                        if (confidence > 0.5) {
+                            val x = results[i] * resizedBitmap.width
+                            val y = results[i + 1] * resizedBitmap.height
+                            val w = results[i + 2] * resizedBitmap.width
+                            val h = results[i + 3] * resizedBitmap.height
                             boundingBoxes.add(RectF(x - w / 2, y - h / 2, x + w / 2, y + h / 2))
                         }
                     }
+                    Log.d("Bounding", "Bounding boxes: $boundingBoxes")
 
-                    binding.pvCameraX.post {
+                    // Update UI on the main thread
+                    runOnUiThread {
+//                        binding.pvCameraX.post {
+//                            boundingBoxOverlay.updateBoundingBoxes(boundingBoxes)
+//                            // Update your ImageView or custom view to display annotatedBitmap
+//                        }
                         boundingBoxOverlay.updateBoundingBoxes(boundingBoxes)
                     }
                 }
@@ -176,7 +206,7 @@ class CameraActivity : AppCompatActivity() {
                 cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis)
             } catch (exc: Exception) {
                 // Handle exceptions
-                Toast.makeText(this , "Error Changing Camera", Toast.LENGTH_SHORT).show()
+                Log.d("BINDING", "Use case binding failed")
             }
         }, ContextCompat.getMainExecutor(this))
 
@@ -200,6 +230,7 @@ class CameraActivity : AppCompatActivity() {
         fun updateBoundingBoxes(boxes: List<RectF>) {
             boundingBoxes.clear()
             boundingBoxes.addAll(boxes)
+            Log.d(TAG, "Updating bounding boxes: $boundingBoxes") // Log the updated boxes
             invalidate() // Trigger redraw
         }
 
@@ -208,6 +239,7 @@ class CameraActivity : AppCompatActivity() {
             for (box in boundingBoxes) {
                 canvas.drawRect(box, paint)
             }
+            Log.d("draw", "render to view")
         }
     }
 
@@ -219,35 +251,6 @@ class CameraActivity : AppCompatActivity() {
         val declaredLength = fileDescriptor.declaredLength
         return channel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
     }
-
-
-//    private fun startCamera() {
-//        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-//
-//        cameraProviderFuture.addListener({
-//            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
-//            val preview = Preview.Builder()
-//                .build()
-//                .also {
-//                    it.setSurfaceProvider(binding.pvCameraX.surfaceProvider)
-//                }
-//            try {
-//                cameraProvider.unbindAll()
-//                cameraProvider.bindToLifecycle(
-//                    this,
-//                    cameraSelector,
-//                    preview
-//                )
-//            } catch (exc: Exception) {
-//                Toast.makeText(
-//                    this@CameraActivity,
-//                    "Gagal memunculkan kamera.",
-//                    Toast.LENGTH_SHORT
-//                ).show()
-//                Log.e(TAG, "startCamera: ${exc.message}")
-//            }
-//        }, ContextCompat.getMainExecutor(this))
-//    }
 
     private fun startCameraUri() {
         currentImageUri = getImageUri(this)

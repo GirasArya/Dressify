@@ -71,4 +71,6 @@
     <string name="landing_btn_string">Get Started</string>
     <string name="unisex">Unisex</string>
     <string name="rainy">Rainy</string>
+    <string name="ready_to_see_a_magic">Ready to see a magic?</string>
+    <string name="click_me">Click me</string>
 </resources>
