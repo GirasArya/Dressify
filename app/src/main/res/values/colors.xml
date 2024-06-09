@@ -11,4 +11,5 @@
     <color name="btn_primary">#007BFF</color>
     <color name="input_color">#E5E5E5</color>
     <color name="bottom_nav_background">#1E1E1E</color>
+    <color name="bounding_box_color">#FF9800</color>
 </resources>

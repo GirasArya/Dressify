@@ -34,16 +34,24 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
+
 
     //ViewBinding
     buildFeatures{
         viewBinding = true
+        mlModelBinding = true
+    }
+
+    externalNativeBuild {
+        cmake {
+            path ; "CMakeLists.txt"
+        }
     }
 
 }
@@ -71,6 +79,13 @@ dependencies {
     //Room
     implementation("androidx.room:room-runtime:2.6.1")
     implementation(libs.androidx.ui.desktop)
+    implementation(libs.tensorflow.lite.support)
+    implementation(libs.tensorflow.lite.metadata)
+    implementation(libs.tensorflow.lite.gpu)
+    implementation(libs.tensorflow.lite.task.vision)
+    implementation("com.google.android.gms:play-services-tflite-gpu:16.2.0")
+    implementation("org.tensorflow:tensorflow-lite-task-vision-play-services:0.4.2")
+    implementation("com.google.android.gms:play-services-tflite-support:16.1.0")
     ksp("androidx.room:room-compiler:2.6.1")
 
     // Fragment and navigation
@@ -90,6 +105,20 @@ dependencies {
     implementation ("com.firebaseui:firebase-ui-auth:7.2.0")
     implementation("com.google.android.gms:play-services-auth:21.1.1")
     implementation("com.google.firebase:firebase-analytics")
+
+    // Viewpager and dots indicator
+    implementation("me.relex:circleindicator:2.1.6")
+
+    //open cv
+    implementation(project(":sdk"))
+
+    //camera
+    implementation("androidx.camera:camera-core:1.1.0")
+    implementation("androidx.camera:camera-camera2:1.1.0")
+    implementation("androidx.camera:camera-lifecycle:1.1.0")
+    implementation("androidx.camera:camera-view:1.0.0-alpha32")
+    implementation("androidx.camera:camera-extensions:1.0.0-alpha32")
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

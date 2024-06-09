@@ -7,61 +7,47 @@
     android:layout_height="match_parent"
     tools:context=".ui.view.landing.LandingActivity">
 
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/vp_landing"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/vp_dots"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/iv_landingImage"
-        android:layout_width="wrap_content"
+
+    <me.relex.circleindicator.CircleIndicator3
+        android:id="@+id/vp_dots"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:src="@drawable/img_landing"
+        android:layout_marginTop="8dp"
+        app:ci_drawable="@color/btn_primary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.19" />
-
-    <TextView
-        android:id="@+id/tv_landingTitle"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginEnd="40dp"
-        android:gravity="center_horizontal|top"
-        android:text="@string/tv_landingDesc"
-        android:textSize="18sp"
-        android:fontFamily="@font/jost_regular"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/iv_landingImage"
-        app:layout_constraintVertical_bias="0.25" />
+        app:layout_constraintVertical_bias="0.71000004" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_login"
         android:layout_width="280dp"
         android:layout_height="wrap_content"
-        android:text="@string/txt_btnLogin"
-        android:textStyle="bold"
+        android:layout_marginTop="32dp"
         android:backgroundTint="@color/btn_primary"
         android:fontFamily="@font/monserrat_regular"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_landingTitle"
-        app:layout_constraintVertical_bias="0.25" />
-
-    <TextView
-        android:id="@+id/tv_landingRegister"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="@string/tv_landingRegister"
-        android:textSize="18sp"
+        android:text="@string/landing_btn_string"
         android:textStyle="bold"
-        android:fontFamily="@font/monserrat_regular"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_login"
+        app:layout_constraintTop_toBottomOf="@+id/vp_dots"
         app:layout_constraintVertical_bias="0.0" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
