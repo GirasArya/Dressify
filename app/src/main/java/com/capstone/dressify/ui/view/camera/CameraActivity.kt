@@ -61,6 +61,7 @@ class CameraActivity : AppCompatActivity() {
     private lateinit var clothesBitmap: Bitmap
     private lateinit var boundingBoxOverlay: BoundingBoxOverlay
     private lateinit var overlayFrameLayout: FrameLayout
+
     private fun allPermissionGranted() =
         ContextCompat.checkSelfPermission(
             this, REQUIRED_PERMISSION
@@ -96,6 +97,7 @@ class CameraActivity : AppCompatActivity() {
 
         changeStatusBarColor("#007BFF")
 
+
         if (!allPermissionGranted()) {
             requestPermissionLauncher.launch(REQUIRED_PERMISSION)
         } else {
@@ -114,11 +116,11 @@ class CameraActivity : AppCompatActivity() {
             startCameraUri()
         }
 
+
         binding.ivCapture.setOnClickListener {
             takePhoto()
         }
     }
-
 
 
     private fun startCamera(interpreter: Interpreter) {
@@ -130,6 +132,7 @@ class CameraActivity : AppCompatActivity() {
                 .also { it.setSurfaceProvider(binding.pvCameraX.surfaceProvider) }
 
             val imageAnalysis = ImageAnalysis.Builder()
+
                 .setTargetResolution(Size(640, 640)) // Match model input size
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build()
@@ -143,9 +146,6 @@ class CameraActivity : AppCompatActivity() {
                 }
                 imageProxy.close()
             }
-
-
-
 
             try {
                 cameraProvider.unbindAll()
@@ -162,8 +162,8 @@ class CameraActivity : AppCompatActivity() {
                 else CameraSelector.DEFAULT_BACK_CAMERA
             startCamera(interpreter)
         }
-
     }
+
 
     private fun runModelOnFrame(frame: Bitmap): List<RectF> {
         // Prepare input for model
@@ -220,6 +220,7 @@ class CameraActivity : AppCompatActivity() {
         fun updateBoundingBoxes(boxes: List<RectF>) {
             boundingBoxes.clear()
             boundingBoxes.addAll(boxes)
+
             invalidate()
         }
 
@@ -244,7 +245,6 @@ class CameraActivity : AppCompatActivity() {
 
         return frame
     }
-
 
     private fun loadModelFile(context: Context, modelPath: String): MappedByteBuffer {
         val fileDescriptor = context.assets.openFd(modelPath)

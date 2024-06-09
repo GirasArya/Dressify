@@ -46,15 +46,13 @@ android {
     buildFeatures{
         viewBinding = true
         mlModelBinding = true
-    }
-
     externalNativeBuild {
         cmake {
             path ; "CMakeLists.txt"
         }
     }
-
 }
+
 
 dependencies {
     //Glide
@@ -79,6 +77,7 @@ dependencies {
     //Room
     implementation("androidx.room:room-runtime:2.6.1")
     implementation(libs.androidx.ui.desktop)
+    
     implementation(libs.tensorflow.lite.support)
     implementation(libs.tensorflow.lite.metadata)
     implementation(libs.tensorflow.lite.gpu)
@@ -86,6 +85,9 @@ dependencies {
     implementation("com.google.android.gms:play-services-tflite-gpu:16.2.0")
     implementation("org.tensorflow:tensorflow-lite-task-vision-play-services:0.4.2")
     implementation("com.google.android.gms:play-services-tflite-support:16.1.0")
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.play.services.vision.common)
+
     ksp("androidx.room:room-compiler:2.6.1")
 
     // Fragment and navigation
@@ -98,6 +100,9 @@ dependencies {
     implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
     implementation("androidx.camera:camera-view:$cameraxVersion")
 
+
+    // Viewpager and dots indicator
+    implementation("me.relex:circleindicator:2.1.6")
 
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
@@ -127,6 +132,9 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.leanback)
     implementation(libs.glide)
+    implementation(libs.tensorflow.lite.support)
+    implementation(libs.tensorflow.lite.metadata)
+    implementation(libs.tensorflow.lite.gpu)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
