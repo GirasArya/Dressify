@@ -39,7 +39,7 @@
             android:exported="false" />
         <activity
             android:name=".ui.view.camera.CameraActivity"
-            android:exported="false" />
+            android:exported="false"/>
         <activity
             android:name=".ui.view.login.LoginActivity"
             android:exported="false"
@@ -54,6 +54,7 @@
         <activity
             android:name=".ui.view.main.MainActivity"
             android:exported="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

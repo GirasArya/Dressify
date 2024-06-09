@@ -42,10 +42,13 @@ import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.gpu.GpuDelegate
 import org.tensorflow.lite.support.image.TensorImage
 import java.io.FileInputStream
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+
 
 class CameraActivity : AppCompatActivity() {
 
@@ -57,6 +60,8 @@ class CameraActivity : AppCompatActivity() {
     private lateinit var interpreter: Interpreter
     private lateinit var clothesBitmap: Bitmap
     private lateinit var boundingBoxOverlay: BoundingBoxOverlay
+    private lateinit var overlayFrameLayout: FrameLayout
+
     private fun allPermissionGranted() =
         ContextCompat.checkSelfPermission(
             this, REQUIRED_PERMISSION
@@ -79,21 +84,17 @@ class CameraActivity : AppCompatActivity() {
         cameraExecutor = Executors.newSingleThreadExecutor()
 
         val model = "final_ar_float32.tflite"
-        interpreter = Interpreter(loadModelFile(this, model)); Interpreter.Options()
-            .addDelegate(GpuDelegate())
-        // Load both models (object detection and clothes overlay)
-        interpreter =
-            Interpreter(loadModelFile(this, "final_ar_float32.tflite")) // Object detection model
+        // Use Interpreter without GPU delegate
+        val options = Interpreter.Options()
+//        options.addDelegate(GpuDelegate()) // Comment this line to avoid GPU delegate
+        options.setNumThreads(4) // Optional: Set number of threads to be used by the interpreter
+        interpreter = Interpreter(loadModelFile(this, model), options)
+
+
         clothesBitmap = BitmapFactory.decodeResource(resources, R.drawable.test_img)
         boundingBoxOverlay = BoundingBoxOverlay(this)
-        val overlayLayoutParams = FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.MATCH_PARENT,
-            FrameLayout.LayoutParams.MATCH_PARENT
-        )
-        boundingBoxOverlay.layoutParams = overlayLayoutParams
+        binding.root.addView(boundingBoxOverlay)
 
-
-        binding.pvCameraX.overlay.add(boundingBoxOverlay)
         changeStatusBarColor("#007BFF")
 
 
@@ -119,30 +120,8 @@ class CameraActivity : AppCompatActivity() {
         binding.ivCapture.setOnClickListener {
             takePhoto()
         }
-
     }
 
-    private fun overlayClothes(frame: Bitmap, detections: List<RectF>): Bitmap {
-        val mutableBitmap = frame.copy(Bitmap.Config.ARGB_8888, true)
-        val canvas = Canvas(mutableBitmap)
-        val paint = Paint()
-        paint.style = Paint.Style.STROKE
-        paint.strokeWidth = 5f
-        paint.color = Color.RED
-
-        detections.forEach { box ->
-            // Adjust clothing image to match the box dimensions (you'll need to figure out the appropriate scaling logic)
-            val resizedClothes = Bitmap.createScaledBitmap(
-                clothesBitmap,
-                box.width().toInt(),
-                box.height().toInt(),
-                false
-            )
-            canvas.drawBitmap(resizedClothes, null, box, paint) // Draw the clothing on the canvas
-        }
-
-        return mutableBitmap
-    }
 
     private fun startCamera(interpreter: Interpreter) {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
@@ -153,50 +132,17 @@ class CameraActivity : AppCompatActivity() {
                 .also { it.setSurfaceProvider(binding.pvCameraX.surfaceProvider) }
 
             val imageAnalysis = ImageAnalysis.Builder()
-                .setTargetResolution(Size(640, 640)) // Match model input size (640x640)
+
+                .setTargetResolution(Size(640, 640)) // Match model input size
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build()
 
-
             imageAnalysis.setAnalyzer(cameraExecutor) { imageProxy ->
                 val image = imageProxy.toBitmap()
-
-                if (image != null) {
-                    // Object Detection
-                    val resizedBitmap = Bitmap.createScaledBitmap(image, 640, 640, false)
-                    val tensorImage = TensorImage(DataType.FLOAT32)
-                    tensorImage.load(resizedBitmap)
-
-                    val inputArray = arrayOf(tensorImage.buffer)
-                    val outputArray = Array(1) { Array(11) { FloatArray(8400) } }
-                    val outputMap = HashMap<Int, Any>()
-                    outputMap[0] = outputArray
-
-                    interpreter.runForMultipleInputsOutputs(inputArray, outputMap)
-
-                    // Convert object detection output to bounding boxes (fixed)
-                    val boundingBoxes = mutableListOf<RectF>()
-                    val results = outputArray[0][0] // Access results directly from the first output set
-                    for (i in 0 until results.size step 5) { // Iterate in steps of 5, assuming 5 values per detection
-                        val confidence = results[i + 4]
-                        if (confidence > 0.5) {
-                            val x = results[i] * resizedBitmap.width
-                            val y = results[i + 1] * resizedBitmap.height
-                            val w = results[i + 2] * resizedBitmap.width
-                            val h = results[i + 3] * resizedBitmap.height
-                            boundingBoxes.add(RectF(x - w / 2, y - h / 2, x + w / 2, y + h / 2))
-                        }
-                    }
-                    Log.d("Bounding", "Bounding boxes: $boundingBoxes")
-
-                    // Update UI on the main thread
-                    runOnUiThread {
-//                        binding.pvCameraX.post {
-//                            boundingBoxOverlay.updateBoundingBoxes(boundingBoxes)
-//                            // Update your ImageView or custom view to display annotatedBitmap
-//                        }
-                        boundingBoxOverlay.updateBoundingBoxes(boundingBoxes)
-                    }
+                val boundingBoxes = runModelOnFrame(image)
+                runOnUiThread {
+                    boundingBoxOverlay.updateBoundingBoxes(boundingBoxes)
+                    Log.d("Bounding", "Bounding boxes: $boundingBoxes, updated on UI thread")
                 }
                 imageProxy.close()
             }
@@ -216,7 +162,51 @@ class CameraActivity : AppCompatActivity() {
                 else CameraSelector.DEFAULT_BACK_CAMERA
             startCamera(interpreter)
         }
+    }
 
+
+    private fun runModelOnFrame(frame: Bitmap): List<RectF> {
+        // Prepare input for model
+        val inputTensor = Bitmap.createScaledBitmap(frame, 640, 640, false)
+        val byteBuffer = convertBitmapToByteBuffer(inputTensor)
+
+        // Run inference
+        val outputLocations = Array(1) { Array(11) { FloatArray(8400) } }
+        interpreter.run(byteBuffer, outputLocations)
+
+        // Convert model output to screen coordinates
+        return convertOutputToRectangles(outputLocations, frame.width, frame.height)
+    }
+
+    private fun convertBitmapToByteBuffer(bitmap: Bitmap): ByteBuffer {
+        val modelInputWidth = 640 // Replace with your model's actual input width
+        val modelInputHeight = 640 // Replace with your model's actual input height
+        val byteBuffer = ByteBuffer.allocateDirect(4 * modelInputWidth * modelInputHeight * 3) // 3 for RGB
+        byteBuffer.order(ByteOrder.nativeOrder())
+        val intValues = IntArray(modelInputWidth * modelInputHeight)
+        bitmap.getPixels(intValues, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
+        var pixel = 0
+        for (i in 0 until modelInputWidth) {
+            for (j in 0 until modelInputHeight) {
+                val `val` = intValues[pixel++]
+                byteBuffer.putFloat((`val` shr 16 and 0xFF) / 255.0f)
+                byteBuffer.putFloat((`val` shr 8 and 0xFF) / 255.0f)
+                byteBuffer.putFloat((`val` and 0xFF) / 255.0f)
+            }
+        }
+        return byteBuffer
+    }
+
+    private fun convertOutputToRectangles(outputLocations: Array<Array<FloatArray>>, imageWidth: Int, imageHeight: Int): List<RectF> {
+        val rectangles = mutableListOf<RectF>()
+        for (result in outputLocations[0]) {
+            val left = result[0] * imageWidth
+            val top = result[1] * imageHeight
+            val right = result[2] * imageWidth
+            val bottom = result[3] * imageHeight
+            rectangles.add(RectF(left, top, right, bottom))
+        }
+        return rectangles
     }
 
     class BoundingBoxOverlay(context: Context) : View(context) {
@@ -230,8 +220,8 @@ class CameraActivity : AppCompatActivity() {
         fun updateBoundingBoxes(boxes: List<RectF>) {
             boundingBoxes.clear()
             boundingBoxes.addAll(boxes)
-            Log.d(TAG, "Updating bounding boxes: $boundingBoxes") // Log the updated boxes
-            invalidate() // Trigger redraw
+
+            invalidate()
         }
 
         override fun onDraw(canvas: Canvas) {
@@ -239,8 +229,21 @@ class CameraActivity : AppCompatActivity() {
             for (box in boundingBoxes) {
                 canvas.drawRect(box, paint)
             }
-            Log.d("draw", "render to view")
         }
+    }
+
+    private fun overlayClothes(frame: Bitmap, detections: List<RectF>): Bitmap {
+        val canvas = Canvas(frame)
+        val paint = Paint()
+        paint.style = Paint.Style.STROKE
+        paint.strokeWidth = 5f
+        paint.color = Color.RED
+
+        detections.forEach { box ->
+            canvas.drawRect(box, paint)
+        }
+
+        return frame
     }
 
     private fun loadModelFile(context: Context, modelPath: String): MappedByteBuffer {
@@ -341,5 +344,6 @@ class CameraActivity : AppCompatActivity() {
         const val EXTRA_CAMERAX_IMAGE = "CameraX Image"
         const val CAMERAX_RESULT = 200
         const val IMAGE_URI = "image_uri"
+        private const val BODY_LABEL = 0
     }
 }

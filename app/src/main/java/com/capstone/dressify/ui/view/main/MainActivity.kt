@@ -113,13 +113,13 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private val launchCameraActivity =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                currentImageUri =
-                    result.data?.getParcelableExtra(CameraActivity.EXTRA_CAMERAX_IMAGE)
-            }
-        }
+//    private val launchCameraActivity =
+//        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+//            if (result.resultCode == RES qULT_OK) {
+//                currentImageUri =
+//                    result.data?.getParcelableExtra(CameraActivity.EXTRA_CAMERAX_IMAGE)
+//            }
+//        }
 
     private fun changeStatusBarColor(color: String) {
         val window: Window = window
