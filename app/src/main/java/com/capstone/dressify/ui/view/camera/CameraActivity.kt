@@ -3,23 +3,15 @@
 package com.capstone.dressify.ui.view.camera
 
 import android.Manifest
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.RectF
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.util.Size
-import android.view.View
 import android.view.Window
 import android.view.WindowManager
-import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -31,37 +23,37 @@ import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
-import com.capstone.dressify.R
 import com.capstone.dressify.databinding.ActivityCameraBinding
 import com.capstone.dressify.helpers.createCustomTempFile
 import com.capstone.dressify.helpers.getImageUri
 import com.capstone.dressify.ui.view.imagedetail.ImageDetailActivity
 import com.capstone.dressify.ui.view.main.MainActivity
-import org.tensorflow.lite.DataType
-import org.tensorflow.lite.Interpreter
-import org.tensorflow.lite.gpu.GpuDelegate
-import org.tensorflow.lite.support.image.TensorImage
-import java.io.FileInputStream
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
-import java.nio.MappedByteBuffer
-import java.nio.channels.FileChannel
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import android.graphics.Matrix
+import androidx.camera.core.AspectRatio
+import androidx.camera.core.Camera
+import androidx.core.app.ActivityCompat
+import com.capstone.dressify.ui.view.camera.ModelObjects.LABELS_PATH
+import com.capstone.dressify.ui.view.camera.ModelObjects.MODEL_PATH
 
 
-class CameraActivity : AppCompatActivity() {
+class CameraActivity : AppCompatActivity(), BoundingBoxDetector.DetectorListener {
 
     private lateinit var binding: ActivityCameraBinding
     private var imageCapture: ImageCapture? = null
     private var currentImageUri: Uri? = null
     private var cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-    private lateinit var cameraExecutor: ExecutorService
-    private lateinit var interpreter: Interpreter
-    private lateinit var clothesBitmap: Bitmap
-    private lateinit var boundingBoxOverlay: BoundingBoxOverlay
-    private lateinit var overlayFrameLayout: FrameLayout
 
+    private var isFrontCamera = false
+
+    private var preview: Preview? = null
+    private var imageAnalyzer: ImageAnalysis? = null
+    private var camera: Camera? = null
+    private var cameraProvider: ProcessCameraProvider? = null
+    private lateinit var detector: BoundingBoxDetector
+
+    private lateinit var cameraExecutor: ExecutorService
     private fun allPermissionGranted() =
         ContextCompat.checkSelfPermission(
             this, REQUIRED_PERMISSION
@@ -83,25 +75,15 @@ class CameraActivity : AppCompatActivity() {
         setContentView(binding.root)
         cameraExecutor = Executors.newSingleThreadExecutor()
 
-        val model = "final_ar_float32.tflite"
-        // Use Interpreter without GPU delegate
-        val options = Interpreter.Options()
-//        options.addDelegate(GpuDelegate()) // Comment this line to avoid GPU delegate
-        options.setNumThreads(4) // Optional: Set number of threads to be used by the interpreter
-        interpreter = Interpreter(loadModelFile(this, model), options)
-
-
-        clothesBitmap = BitmapFactory.decodeResource(resources, R.drawable.test_img)
-        boundingBoxOverlay = BoundingBoxOverlay(this)
-        binding.root.addView(boundingBoxOverlay)
+        detector = BoundingBoxDetector(baseContext, MODEL_PATH, LABELS_PATH, this)
+        detector.setup()
 
         changeStatusBarColor("#007BFF")
 
-
-        if (!allPermissionGranted()) {
-            requestPermissionLauncher.launch(REQUIRED_PERMISSION)
+        if (allPermissionGranted()) {
+            startCamera()
         } else {
-            startCamera(interpreter)
+            ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
         }
 
         binding.flBackArrowCamera.setOnClickListener {
@@ -116,143 +98,94 @@ class CameraActivity : AppCompatActivity() {
             startCameraUri()
         }
 
-
         binding.ivCapture.setOnClickListener {
             takePhoto()
         }
     }
 
 
-    private fun startCamera(interpreter: Interpreter) {
+
+    private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-
         cameraProviderFuture.addListener({
-            val cameraProvider = cameraProviderFuture.get()
-            val preview = Preview.Builder().build()
-                .also { it.setSurfaceProvider(binding.pvCameraX.surfaceProvider) }
-
-            val imageAnalysis = ImageAnalysis.Builder()
-
-                .setTargetResolution(Size(640, 640)) // Match model input size
-                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                .build()
-
-            imageAnalysis.setAnalyzer(cameraExecutor) { imageProxy ->
-                val image = imageProxy.toBitmap()
-                val boundingBoxes = runModelOnFrame(image)
-                runOnUiThread {
-                    boundingBoxOverlay.updateBoundingBoxes(boundingBoxes)
-                    Log.d("Bounding", "Bounding boxes: $boundingBoxes, updated on UI thread")
-                }
-                imageProxy.close()
-            }
-
-            try {
-                cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis)
-            } catch (exc: Exception) {
-                // Handle exceptions
-                Log.d("BINDING", "Use case binding failed")
-            }
+            cameraProvider = cameraProviderFuture.get()
+            bindCameraUseCases()
         }, ContextCompat.getMainExecutor(this))
 
         binding.ivSwitchCamera.setOnClickListener {
-            cameraSelector =
-                if (cameraSelector.equals(CameraSelector.DEFAULT_BACK_CAMERA)) CameraSelector.DEFAULT_FRONT_CAMERA
-                else CameraSelector.DEFAULT_BACK_CAMERA
-            startCamera(interpreter)
+            isFrontCamera = !isFrontCamera
+            cameraSelector = if (isFrontCamera) CameraSelector.DEFAULT_FRONT_CAMERA else CameraSelector.DEFAULT_BACK_CAMERA
+            startCamera() // Restart the camera with the new selector
         }
     }
 
+    private fun bindCameraUseCases() {
+        val cameraProvider = cameraProvider ?: throw IllegalStateException("Camera initialization failed.")
 
-    private fun runModelOnFrame(frame: Bitmap): List<RectF> {
-        // Prepare input for model
-        val inputTensor = Bitmap.createScaledBitmap(frame, 640, 640, false)
-        val byteBuffer = convertBitmapToByteBuffer(inputTensor)
+        val cameraSelector = this.cameraSelector
 
-        // Run inference
-        val outputLocations = Array(1) { Array(11) { FloatArray(8400) } }
-        interpreter.run(byteBuffer, outputLocations)
+        val rotation = binding.pvCameraX.display.rotation
 
-        // Convert model output to screen coordinates
-        return convertOutputToRectangles(outputLocations, frame.width, frame.height)
-    }
+        preview =  Preview.Builder()
+            .setTargetAspectRatio(AspectRatio.RATIO_16_9)
+            .setTargetRotation(rotation)
+            .build()
 
-    private fun convertBitmapToByteBuffer(bitmap: Bitmap): ByteBuffer {
-        val modelInputWidth = 640 // Replace with your model's actual input width
-        val modelInputHeight = 640 // Replace with your model's actual input height
-        val byteBuffer = ByteBuffer.allocateDirect(4 * modelInputWidth * modelInputHeight * 3) // 3 for RGB
-        byteBuffer.order(ByteOrder.nativeOrder())
-        val intValues = IntArray(modelInputWidth * modelInputHeight)
-        bitmap.getPixels(intValues, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
-        var pixel = 0
-        for (i in 0 until modelInputWidth) {
-            for (j in 0 until modelInputHeight) {
-                val `val` = intValues[pixel++]
-                byteBuffer.putFloat((`val` shr 16 and 0xFF) / 255.0f)
-                byteBuffer.putFloat((`val` shr 8 and 0xFF) / 255.0f)
-                byteBuffer.putFloat((`val` and 0xFF) / 255.0f)
+        imageAnalyzer = ImageAnalysis.Builder()
+            .setTargetAspectRatio(AspectRatio.RATIO_16_9)
+            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+            .setTargetRotation(binding.pvCameraX.display.rotation)
+            .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
+            .build()
+
+        imageAnalyzer?.setAnalyzer(cameraExecutor) { imageProxy ->
+            val bitmapBuffer =
+                Bitmap.createBitmap(
+                    imageProxy.width,
+                    imageProxy.height,
+                    Bitmap.Config.ARGB_8888
+                )
+            imageProxy.use { bitmapBuffer.copyPixelsFromBuffer(imageProxy.planes[0].buffer) }
+            imageProxy.close()
+
+            val matrix = Matrix().apply {
+                postRotate(imageProxy.imageInfo.rotationDegrees.toFloat())
+                if (isFrontCamera) {
+                    postScale(-1f, 1f, imageProxy.width.toFloat() / 2, imageProxy.height.toFloat() / 2)
+                }
+
+                if (isFrontCamera) {
+                    postScale(
+                        -1f,
+                        1f,
+                        imageProxy.width.toFloat(),
+                        imageProxy.height.toFloat()
+                    )
+                }
             }
-        }
-        return byteBuffer
-    }
 
-    private fun convertOutputToRectangles(outputLocations: Array<Array<FloatArray>>, imageWidth: Int, imageHeight: Int): List<RectF> {
-        val rectangles = mutableListOf<RectF>()
-        for (result in outputLocations[0]) {
-            val left = result[0] * imageWidth
-            val top = result[1] * imageHeight
-            val right = result[2] * imageWidth
-            val bottom = result[3] * imageHeight
-            rectangles.add(RectF(left, top, right, bottom))
-        }
-        return rectangles
-    }
+            val rotatedBitmap = Bitmap.createBitmap(
+                bitmapBuffer, 0, 0, bitmapBuffer.width, bitmapBuffer.height,
+                matrix, true
+            )
 
-    class BoundingBoxOverlay(context: Context) : View(context) {
-        private val boundingBoxes = mutableListOf<RectF>()
-        private val paint = Paint().apply {
-            color = Color.RED
-            style = Paint.Style.STROKE
-            strokeWidth = 5f
+            detector.detect(rotatedBitmap)
         }
 
-        fun updateBoundingBoxes(boxes: List<RectF>) {
-            boundingBoxes.clear()
-            boundingBoxes.addAll(boxes)
+        cameraProvider.unbindAll()
 
-            invalidate()
+        try {
+            camera = cameraProvider.bindToLifecycle(
+                this,
+                cameraSelector,
+                preview,
+                imageAnalyzer
+            )
+
+            preview?.setSurfaceProvider(binding.pvCameraX.surfaceProvider)
+        } catch(exc: Exception) {
+            Log.e(TAG, "Use case binding failed", exc)
         }
-
-        override fun onDraw(canvas: Canvas) {
-            super.onDraw(canvas)
-            for (box in boundingBoxes) {
-                canvas.drawRect(box, paint)
-            }
-        }
-    }
-
-    private fun overlayClothes(frame: Bitmap, detections: List<RectF>): Bitmap {
-        val canvas = Canvas(frame)
-        val paint = Paint()
-        paint.style = Paint.Style.STROKE
-        paint.strokeWidth = 5f
-        paint.color = Color.RED
-
-        detections.forEach { box ->
-            canvas.drawRect(box, paint)
-        }
-
-        return frame
-    }
-
-    private fun loadModelFile(context: Context, modelPath: String): MappedByteBuffer {
-        val fileDescriptor = context.assets.openFd(modelPath)
-        val inputStream = FileInputStream(fileDescriptor.fileDescriptor)
-        val channel = inputStream.channel
-        val startOffset = fileDescriptor.startOffset
-        val declaredLength = fileDescriptor.declaredLength
-        return channel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
     }
 
     private fun startCameraUri() {
@@ -338,12 +271,44 @@ class CameraActivity : AppCompatActivity() {
         window.statusBarColor = Color.parseColor(color)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        detector.clear()
+        cameraExecutor.shutdown()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (allPermissionGranted()){
+            startCamera()
+        } else {
+            requestPermissionLauncher.launch(REQUIRED_PERMISSIONS.toString())
+        }
+    }
+
     companion object {
         private const val REQUIRED_PERMISSION = Manifest.permission.CAMERA
         private const val TAG = "CameraActivity"
         const val EXTRA_CAMERAX_IMAGE = "CameraX Image"
         const val CAMERAX_RESULT = 200
         const val IMAGE_URI = "image_uri"
-        private const val BODY_LABEL = 0
+        private const val REQUEST_CODE_PERMISSIONS = 10
+        private val REQUIRED_PERMISSIONS = mutableListOf (
+            Manifest.permission.CAMERA
+        ).toTypedArray()
+    }
+
+    override fun onEmptyDetect() {
+        binding.overlay.invalidate()
+    }
+
+    override fun onDetect(boundingBoxes: List<BoundingBox>, inferenceTime: Long) {
+        runOnUiThread {
+            binding.inferenceTime.text = "${inferenceTime}ms"
+            binding.overlay.apply {
+                setResults(boundingBoxes)
+                invalidate()
+            }
+        }
     }
 }
