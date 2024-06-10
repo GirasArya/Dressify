@@ -11,6 +11,7 @@ data class BoundingBox(
     val h: Float,
     val cnf: Float,
     val cls: Int,
-    val clsName: String
+    val clsName: String,
+    val imageResId : Int
 )
 

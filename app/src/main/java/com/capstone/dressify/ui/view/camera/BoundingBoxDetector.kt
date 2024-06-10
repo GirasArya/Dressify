@@ -3,6 +3,7 @@ package com.capstone.dressify.ui.view.camera
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.SystemClock
+import com.capstone.dressify.R
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.support.common.FileUtil
@@ -150,7 +151,7 @@ class BoundingBoxDetector(
                     BoundingBox(
                         x1 = x1, y1 = y1, x2 = x2, y2 = y2,
                         cx = cx, cy = cy, w = adjustedW, h = adjustedH,
-                        cnf = maxConf, cls = maxIdx, clsName = clsName
+                        cnf = maxConf, cls = maxIdx, clsName = clsName, imageResId = R.drawable.test_img
                     )
                 )
             }

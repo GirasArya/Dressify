@@ -307,6 +307,9 @@ class CameraActivity : AppCompatActivity(), BoundingBoxDetector.DetectorListener
             binding.inferenceTime.text = "${inferenceTime}ms"
             binding.overlay.apply {
                 setResults(boundingBoxes)
+                imageResources = boundingBoxes.map {
+                    ContextCompat.getDrawable(this@CameraActivity, it.imageResId)
+                }
                 invalidate()
             }
         }
