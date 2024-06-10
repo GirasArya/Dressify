@@ -14,7 +14,6 @@ glide = "4.11.0"
 googleGmsGoogleServices = "4.4.1"
 firebaseAuth = "23.0.0"
 uiDesktop = "1.6.7"
-
 tensorflowLiteSupport = "0.4.4"
 tensorflowLiteMetadata = "0.4.4"
 tensorflowLiteGpu = "2.9.0"
@@ -38,9 +37,6 @@ tensorflow-lite-metadata = { group = "org.tensorflow", name = "tensorflow-lite-m
 tensorflow-lite-gpu = { group = "org.tensorflow", name = "tensorflow-lite-gpu", version.ref = "tensorflowLiteGpu" }
 
 tensorflow-lite-task-vision = { module = "org.tensorflow:tensorflow-lite-task-vision", version.ref = "tensorflowLiteSupport" }
-
-firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
-play-services-vision-common = { group = "com.google.android.gms", name = "play-services-vision-common", version.ref = "playServicesVisionCommon" }
 
 
 [plugins]
