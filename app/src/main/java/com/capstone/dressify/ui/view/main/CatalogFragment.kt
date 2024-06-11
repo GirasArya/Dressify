@@ -53,8 +53,7 @@ class CatalogFragment : Fragment(), CatalogAdapter.OnFavoriteClickListener {
             mainViewModel.fetchProducts()
         }
 
-        mainViewModel.productList.observe(viewLifecycleOwner) { catalogResponse ->
-            val products = catalogResponse.clothingItems?.filterNotNull() ?: emptyList()
+        mainViewModel.productList.observe(viewLifecycleOwner) { products ->
             catalogAdapter.updateProductList(products)
         }
 

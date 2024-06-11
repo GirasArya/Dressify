@@ -31,7 +31,6 @@ class UserRepository constructor(
             item.copy(pictureLink = item.pictureLink?.replace("\r", "")) // Remove \r
         }
         return response.copy(clothingItems = cleanedClothingItems) // Return cleaned response
-
     }
 
 

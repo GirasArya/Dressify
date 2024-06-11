@@ -42,7 +42,7 @@ class CatalogAdapter(
             }
 
             val title: String? = product.productDisplayName
-            val image: String? = product.productDisplayName
+            val image: String? = product.pictureLink
 
             var isCheck = false
             favoriteViewModel.isItemFavorite(product.productDisplayName ?: "")
