@@ -40,6 +40,13 @@ class FavoriteAdapter: RecyclerView.Adapter<FavoriteAdapter.FavoriteViewHolder>(
                 favoriteViewModel.deleteFavorite(item.title, item.image ?: "")
             }
 
+            binding.flCamera.setOnClickListener {
+                val imageItem = item.image
+                val intent = Intent(itemView.context, CameraActivity::class.java)
+                intent.putExtra("IMAGE_URL_FAV", imageItem)
+                startActivity(itemView.context, intent, null)
+            }
+
             // Set the initial toggle state
             binding.ivIcFavorite.isChecked = item.isCheck
 

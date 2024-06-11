@@ -89,11 +89,14 @@ class CameraActivity : AppCompatActivity(), BoundingBoxDetector.DetectorListener
         setContentView(binding.root)
         cameraExecutor = Executors.newSingleThreadExecutor()
 
-        imageUrl = intent.getStringExtra("IMAGE_URL")!!
-        imageUrl?.let {
-            this.imageUrl = it  // Store the image URL in the activity's scope
-            detector = BoundingBoxDetector(this, MODEL_PATH, LABELS_PATH, this, it)
+        imageUrl = (intent.getStringExtra("IMAGE_URL_FAV") ?: intent.getStringExtra("IMAGE_URL")).toString()
+        if (imageUrl.isNotEmpty()) { // Check if imageUrl is NOT null or empty
+            detector = BoundingBoxDetector(this, MODEL_PATH, LABELS_PATH, this, imageUrl)
             detector.setup()
+        } else {
+            Log.e("CameraActivity", "Image URL is missing or null from both keys")
+            Toast.makeText(this, "Error: Image URL is missing", Toast.LENGTH_SHORT).show()
+            finish()
         }
 
         changeStatusBarColor("#007BFF")

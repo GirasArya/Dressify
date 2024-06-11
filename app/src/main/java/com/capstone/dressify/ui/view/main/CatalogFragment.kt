@@ -16,6 +16,7 @@ import com.capstone.dressify.ui.adapter.CatalogAdapter
 import com.capstone.dressify.ui.viewmodel.FavoriteViewModel
 import com.capstone.dressify.ui.viewmodel.MainViewModel
 import com.capstone.dressify.factory.ViewModelFactory
+import com.capstone.dressify.ui.adapter.LoadingStateAdapter
 import kotlinx.coroutines.launch
 
 class CatalogFragment : Fragment(), CatalogAdapter.OnFavoriteClickListener {
@@ -42,23 +43,25 @@ class CatalogFragment : Fragment(), CatalogAdapter.OnFavoriteClickListener {
         }
 
         catalogAdapter = CatalogAdapter(emptyList(), favViewmodel, viewLifecycleOwner, this) // Initialize with empty list
-        binding.rvCatalogGrid.adapter = catalogAdapter
+        binding.rvCatalogGrid.adapter = catalogAdapter.withLoadStateFooter(
+            footer = LoadingStateAdapter {
+                catalogAdapter.retry()
+            }
+        )
 
         binding.rvCatalogGrid.layoutManager = GridLayoutManager(requireContext(), 2)
-        mainViewModel.productList.observe(viewLifecycleOwner) { clothingItems ->
-            catalogAdapter.updateProductList(clothingItems)
-        }
-
         lifecycleScope.launch {
-            mainViewModel.fetchProducts()
-        }
-
-        mainViewModel.productList.observe(viewLifecycleOwner) { products ->
-            catalogAdapter.updateProductList(products)
+            mainViewModel.fetchProducts().observe(viewLifecycleOwner) { pagingData ->
+                catalogAdapter.submitData(lifecycle, pagingData)
+            }
         }
 
         mainViewModel.isLoading.observe(viewLifecycleOwner) {
             showLoading(it)
+        }
+
+        lifecycleScope.launch {
+            mainViewModel.fetchProducts()
         }
 
         return binding.root

@@ -74,5 +74,6 @@
     <string name="rainy">Rainy</string>
     <string name="ready_to_see_a_magic">Ready to see a magic?</string>
     <string name="click_me">Click me</string>
->>>>>>> dev-giras
+    <string name="retry">Retry</string>
+    >>>>>>> dev-giras
 </resources>

@@ -6,8 +6,12 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
+import androidx.paging.PagingData
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.capstone.dressify.R
 import com.capstone.dressify.data.remote.response.ClothingItemsItem
 import com.capstone.dressify.databinding.ItemCardBinding
 import com.capstone.dressify.ui.view.camera.CameraActivity
@@ -18,7 +22,7 @@ class CatalogAdapter(
     private val favoriteViewModel: FavoriteViewModel,
     private val lifecycleOwner: LifecycleOwner,
     private val onFavoriteClickListener: OnFavoriteClickListener
-) : RecyclerView.Adapter<CatalogAdapter.CatalogViewHolder>() {
+) : PagingDataAdapter<ClothingItemsItem, CatalogAdapter.CatalogViewHolder>(DIFF_CALLBACK) {
     private val isFavoriteLiveData = MutableLiveData<Boolean>()
 
     inner class CatalogViewHolder(val binding: ItemCardBinding) :
@@ -74,18 +78,41 @@ class CatalogAdapter(
         return CatalogViewHolder(binding)
     }
 
-    fun updateProductList(newProducts: List<ClothingItemsItem>) {
-        productList = newProducts
-        notifyDataSetChanged() // Refresh the adapter
-    }
-
     override fun getItemCount(): Int = productList.size
 
     override fun onBindViewHolder(holder: CatalogViewHolder, position: Int) {
-        holder.bind(productList[position])
+        val item = getItem(position)
+        if (item != null) {
+            holder.bind(item)
+        } else {
+            // Placeholder Content
+            holder.binding.ivImgClothes.setImageResource(R.drawable.ic_place_holder)
+            holder.binding.tvClotheName.text = "Loading..."
+            // You can also disable any interactive elements here
+            holder.binding.flCamera.isEnabled = false
+            holder.binding.ivIcFavorite.isEnabled = false
+        }
     }
-
     interface OnFavoriteClickListener {
         fun onFavoriteClick(product: ClothingItemsItem)
+    }
+
+    companion object {
+        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<ClothingItemsItem>() {
+            override fun areItemsTheSame(
+                oldItem: ClothingItemsItem,
+                newItem: ClothingItemsItem
+            ): Boolean {
+                return oldItem == newItem
+            }
+
+            override fun areContentsTheSame(
+                oldItem: ClothingItemsItem,
+                newItem: ClothingItemsItem
+            ): Boolean {
+                return oldItem == newItem
+            }
+
+        }
     }
 }

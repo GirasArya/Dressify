@@ -17,6 +17,7 @@ uiDesktop = "1.6.7"
 tensorflowLiteSupport = "0.4.4"
 tensorflowLiteMetadata = "0.4.4"
 tensorflowLiteGpu = "2.9.0"
+pagingRuntimeKtx = "3.1.0"
 
 
 [libraries]
@@ -37,6 +38,7 @@ tensorflow-lite-metadata = { group = "org.tensorflow", name = "tensorflow-lite-m
 tensorflow-lite-gpu = { group = "org.tensorflow", name = "tensorflow-lite-gpu", version.ref = "tensorflowLiteGpu" }
 
 tensorflow-lite-task-vision = { module = "org.tensorflow:tensorflow-lite-task-vision", version.ref = "tensorflowLiteSupport" }
+androidx-paging-runtime-ktx = { module = "androidx.paging:paging-runtime-ktx", version.ref = "pagingRuntimeKtx" }
 
 
 [plugins]
