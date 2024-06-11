@@ -142,17 +142,17 @@ class CameraActivity : AppCompatActivity(), BoundingBoxDetector.DetectorListener
 
         val cameraSelector = this.cameraSelector
 
-        val rotation = binding.pvCameraX.display.rotation
+//        val rotation = binding.pvCameraX.display.rotation
 
         preview =  Preview.Builder()
             .setTargetAspectRatio(AspectRatio.RATIO_16_9)
-            .setTargetRotation(rotation)
+//            .setTargetRotation(rotation)
             .build()
 
         imageAnalyzer = ImageAnalysis.Builder()
             .setTargetAspectRatio(AspectRatio.RATIO_16_9)
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-            .setTargetRotation(binding.pvCameraX.display.rotation)
+//            .setTargetRotation(binding.pvCameraX.display.rotation)
             .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
             .build()
 
@@ -327,6 +327,7 @@ class CameraActivity : AppCompatActivity(), BoundingBoxDetector.DetectorListener
                 setResults(boundingBoxes)
                 GlobalScope.launch(Dispatchers.Main) {
                     imageResources = boundingBoxes.map {
+                        Log.d("OverlayDebug", "Loading image from URL: ${it.imageUrl}")
                         loadImageFromUrl(it.imageUrl) ?: ContextCompat.getDrawable(this@CameraActivity, R.drawable.test_img)
                     }
                     invalidate()

@@ -27,10 +27,11 @@ class UserRepository constructor(
 
     suspend fun getProductCatalog(): CatalogResponse {
         val response = apiService.getProducts()
-        val cleanedClothingItems = response.clothingItems.map { item ->
-            item.copy(pictureLink = item.pictureLink?.replace("\r", "")) // Remove \r
-        }
-        return response.copy(clothingItems = cleanedClothingItems) // Return cleaned response
+        return response
+//        val cleanedClothingItems = response.clothingItems.map { item ->
+//            item.copy(pictureLink = item.pictureLink?.replace("\r", "")) // Remove \r
+//        }
+//        return response.copy(clothingItems = cleanedClothingItems) // Return cleaned response
 
     }
 
