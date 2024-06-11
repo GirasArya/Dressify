@@ -1,6 +1,5 @@
 package com.capstone.dressify.ui.adapter
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -9,7 +8,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.capstone.dressify.data.remote.response.CatalogResponse
 import com.capstone.dressify.data.remote.response.ClothingItemsItem
 import com.capstone.dressify.databinding.ItemCardBinding
 import com.capstone.dressify.ui.view.camera.CameraActivity
@@ -26,22 +24,25 @@ class CatalogAdapter(
     inner class CatalogViewHolder(val binding: ItemCardBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(product: ClothingItemsItem) {
-            Glide.with(itemView.context)
+            Glide.with(itemView)
                 .load(product.pictureLink)
                 .into(binding.ivImgClothes)
             binding.tvClotheName.text = product.productDisplayName
 
             binding.flCamera.setOnClickListener {
+                val imageItem = product.pictureLink
                 val intent = Intent(itemView.context, CameraActivity::class.java)
+                intent.putExtra("IMAGE_URL", imageItem)
                 startActivity(itemView.context, intent, null)
             }
+
 
             binding.ivIcFavorite.setOnClickListener {
                 onFavoriteClickListener.onFavoriteClick(product)
             }
 
             val title: String? = product.productDisplayName
-            val image: String? = product.pictureLink
+            val image: String? = product.productDisplayName
 
             var isCheck = false
             favoriteViewModel.isItemFavorite(product.productDisplayName ?: "")
@@ -54,6 +55,7 @@ class CatalogAdapter(
                         isCheck = false
                     }
                 }
+
 
             binding.ivIcFavorite.setOnClickListener {
                 isCheck = !isCheck
@@ -72,7 +74,6 @@ class CatalogAdapter(
         return CatalogViewHolder(binding)
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     fun updateProductList(newProducts: List<ClothingItemsItem>) {
         productList = newProducts
         notifyDataSetChanged() // Refresh the adapter

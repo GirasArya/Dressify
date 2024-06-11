@@ -14,7 +14,7 @@ data class CatalogResponse(
 	val pageSize: Int? = null,
 
 	@field:SerializedName("clothingItems")
-	val clothingItems: List<ClothingItemsItem?>? = null,
+	val clothingItems: List<ClothingItemsItem>,
 
 	@field:SerializedName("error")
 	val error: Boolean? = null,

@@ -43,7 +43,11 @@ class CatalogFragment : Fragment(), CatalogAdapter.OnFavoriteClickListener {
 
         catalogAdapter = CatalogAdapter(emptyList(), favViewmodel, viewLifecycleOwner, this) // Initialize with empty list
         binding.rvCatalogGrid.adapter = catalogAdapter
+
         binding.rvCatalogGrid.layoutManager = GridLayoutManager(requireContext(), 2)
+        mainViewModel.productList.observe(viewLifecycleOwner) { clothingItems ->
+            catalogAdapter.updateProductList(clothingItems)
+        }
 
         lifecycleScope.launch {
             mainViewModel.fetchProducts()

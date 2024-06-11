@@ -1,9 +1,12 @@
 package com.capstone.dressify.ui.view.camera
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.os.SystemClock
+import android.util.Log
 import com.capstone.dressify.R
+import com.capstone.dressify.helpers.getImageUri
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.support.common.FileUtil
@@ -21,7 +24,8 @@ class BoundingBoxDetector(
     private val context: Context,
     private val modelPath: String,
     private val labelPath: String,
-    private val detectorListener: DetectorListener
+    private val detectorListener: DetectorListener,
+    private val imageUrl: String
 ) {
 
     private var interpreter: Interpreter? = null
@@ -89,11 +93,13 @@ class BoundingBoxDetector(
         val processedImage = imageProcessor.process(tensorImage)
         val imageBuffer = processedImage.buffer
 
-        val output = TensorBuffer.createFixedSize(intArrayOf(1 , numChannel, numElements), OUTPUT_IMAGE_TYPE)
+        val output =
+            TensorBuffer.createFixedSize(intArrayOf(1, numChannel, numElements), OUTPUT_IMAGE_TYPE)
         interpreter?.run(imageBuffer, output.buffer)
 
 
-        val bestBoxes = bestBox(output.floatArray)
+
+        val bestBoxes = bestBox(output.floatArray, imageUrl ?: "")
         inferenceTime = SystemClock.uptimeMillis() - inferenceTime
 
 
@@ -106,7 +112,7 @@ class BoundingBoxDetector(
     }
 
     // Modify the bestBox method to adjust the bounding box coordinates for shoulders
-    private fun bestBox(array: FloatArray): List<BoundingBox>? {
+    private fun bestBox(array: FloatArray, imageUrl : String): List<BoundingBox>? {
         val boundingBoxes = mutableListOf<BoundingBox>()
 
         for (c in 0 until numElements) {
@@ -149,11 +155,22 @@ class BoundingBoxDetector(
 
                 boundingBoxes.add(
                     BoundingBox(
-                        x1 = x1, y1 = y1, x2 = x2, y2 = y2,
-                        cx = cx, cy = cy, w = adjustedW, h = adjustedH,
-                        cnf = maxConf, cls = maxIdx, clsName = clsName, imageResId = R.drawable.test_img
+                        x1 = x1,
+                        y1 = y1,
+                        x2 = x2,
+                        y2 = y2,
+                        cx = cx,
+                        cy = cy,
+                        w = adjustedW,
+                        h = adjustedH,
+                        cnf = maxConf,
+                        cls = maxIdx,
+                        clsName = clsName,
+                        imageUrl = imageUrl
+
                     )
                 )
+                Log.d("IMAGE_URL", "image url = $imageUrl")
             }
         }
 
@@ -163,11 +180,11 @@ class BoundingBoxDetector(
     }
 
 
-    private fun applyNMS(boxes: List<BoundingBox>) : MutableList<BoundingBox> {
+    private fun applyNMS(boxes: List<BoundingBox>): MutableList<BoundingBox> {
         val sortedBoxes = boxes.sortedByDescending { it.cnf }.toMutableList()
         val selectedBoxes = mutableListOf<BoundingBox>()
 
-        while(sortedBoxes.isNotEmpty()) {
+        while (sortedBoxes.isNotEmpty()) {
             val first = sortedBoxes.first()
             selectedBoxes.add(first)
             sortedBoxes.remove(first)

@@ -6,17 +6,20 @@ import androidx.lifecycle.asLiveData
 import com.capstone.dressify.data.local.datastore.UserPreference
 import com.capstone.dressify.data.remote.api.ApiService
 import com.capstone.dressify.data.remote.response.CatalogResponse
-import com.capstone.dressify.data.remote.response.ClothingItemsItem
 import com.capstone.dressify.data.remote.response.LoginResponse
 import com.capstone.dressify.data.remote.response.RegisterResponse
 import com.capstone.dressify.domain.model.User
 import com.google.gson.JsonObject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import retrofit2.Call
+
 class UserRepository constructor(
     private val apiService: ApiService,
     private val pref: UserPreference
 ) {
-    val _productList = MutableLiveData<List<ClothingItemsItem>>()
-    val productList : LiveData<List<ClothingItemsItem>>get()  = _productList
+    val _productList = MutableLiveData<List<CatalogResponse>>()
+    val productList : LiveData<List<CatalogResponse>>get()  = _productList
 
     val _isLoading = MutableLiveData<Boolean>()
     val isLoading : LiveData<Boolean> = _isLoading
@@ -24,8 +27,8 @@ class UserRepository constructor(
 
     suspend fun getProductCatalog(): CatalogResponse {
         val response = apiService.getProducts()
-        val cleanedClothingItems = response.clothingItems?.map { item ->
-            item?.copy(pictureLink = item.pictureLink?.replace("\r", "")) // Remove \r
+        val cleanedClothingItems = response.clothingItems.map { item ->
+            item.copy(pictureLink = item.pictureLink?.replace("\r", "")) // Remove \r
         }
         return response.copy(clothingItems = cleanedClothingItems) // Return cleaned response
 
