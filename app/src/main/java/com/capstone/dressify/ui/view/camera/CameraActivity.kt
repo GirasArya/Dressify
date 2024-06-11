@@ -31,11 +31,25 @@ import com.capstone.dressify.ui.view.main.MainActivity
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import android.graphics.Matrix
+import android.graphics.drawable.Drawable
+import android.widget.ImageView
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.Camera
 import androidx.core.app.ActivityCompat
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
+import com.capstone.dressify.R
 import com.capstone.dressify.ui.view.camera.ModelObjects.LABELS_PATH
 import com.capstone.dressify.ui.view.camera.ModelObjects.MODEL_PATH
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.IOException
+import java.io.InputStream
+import java.net.MalformedURLException
+import java.net.URL
 
 
 class CameraActivity : AppCompatActivity(), BoundingBoxDetector.DetectorListener {
@@ -52,8 +66,8 @@ class CameraActivity : AppCompatActivity(), BoundingBoxDetector.DetectorListener
     private var camera: Camera? = null
     private var cameraProvider: ProcessCameraProvider? = null
     private lateinit var detector: BoundingBoxDetector
-
-    private lateinit var cameraExecutor: ExecutorService
+    private lateinit var imageUrl: String
+    lateinit var cameraExecutor: ExecutorService
     private fun allPermissionGranted() =
         ContextCompat.checkSelfPermission(
             this, REQUIRED_PERMISSION
@@ -75,8 +89,12 @@ class CameraActivity : AppCompatActivity(), BoundingBoxDetector.DetectorListener
         setContentView(binding.root)
         cameraExecutor = Executors.newSingleThreadExecutor()
 
-        detector = BoundingBoxDetector(baseContext, MODEL_PATH, LABELS_PATH, this)
-        detector.setup()
+        imageUrl = intent.getStringExtra("IMAGE_URL")!!
+        imageUrl?.let {
+            this.imageUrl = it  // Store the image URL in the activity's scope
+            detector = BoundingBoxDetector(this, MODEL_PATH, LABELS_PATH, this, it)
+            detector.setup()
+        }
 
         changeStatusBarColor("#007BFF")
 
@@ -307,10 +325,24 @@ class CameraActivity : AppCompatActivity(), BoundingBoxDetector.DetectorListener
             binding.inferenceTime.text = "${inferenceTime}ms"
             binding.overlay.apply {
                 setResults(boundingBoxes)
-                imageResources = boundingBoxes.map {
-                    ContextCompat.getDrawable(this@CameraActivity, it.imageResId)
+                GlobalScope.launch(Dispatchers.Main) {
+                    imageResources = boundingBoxes.map {
+                        loadImageFromUrl(it.imageUrl) ?: ContextCompat.getDrawable(this@CameraActivity, R.drawable.test_img)
+                    }
+                    invalidate()
                 }
-                invalidate()
+            }
+        }
+    }
+
+    private suspend fun loadImageFromUrl(url: String): Drawable? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val inputStream = URL(url).openStream()
+                Drawable.createFromStream(inputStream, "src")
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
             }
         }
     }

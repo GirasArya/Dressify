@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.capstone.dressify.data.remote.response.CatalogResponse
+import com.capstone.dressify.data.remote.response.ClothingItemsItem
 import com.capstone.dressify.databinding.FragmentCatalogBinding
 import com.capstone.dressify.ui.adapter.CatalogAdapter
 import com.capstone.dressify.ui.viewmodel.FavoriteViewModel
@@ -43,7 +44,11 @@ class CatalogFragment : Fragment(), CatalogAdapter.OnFavoriteClickListener {
 
         catalogAdapter = CatalogAdapter(emptyList(), favViewmodel, viewLifecycleOwner, this) // Initialize with empty list
         binding.rvCatalogGrid.adapter = catalogAdapter
+
         binding.rvCatalogGrid.layoutManager = GridLayoutManager(requireContext(), 2)
+        mainViewModel.productList.observe(viewLifecycleOwner) { clothingItems ->
+            catalogAdapter.updateProductList(clothingItems)
+        }
 
         lifecycleScope.launch {
             mainViewModel.fetchProducts()
@@ -60,12 +65,12 @@ class CatalogFragment : Fragment(), CatalogAdapter.OnFavoriteClickListener {
         return binding.root
     }
 
-    override fun onFavoriteClick(product: CatalogResponse) {
-        favViewmodel.isItemFavorite(product.title ?: "").observe(viewLifecycleOwner) { isFavorite ->
+    override fun onFavoriteClick(product: ClothingItemsItem) {
+        favViewmodel.isItemFavorite(product.productDisplayName ?: "").observe(viewLifecycleOwner) { isFavorite ->
             if (isFavorite) {
-                favViewmodel.deleteFavorite(product.title ?: "", product.image ?: "")
+                favViewmodel.deleteFavorite(product.productDisplayName ?: "", product.pictureLink ?: "")
             } else {
-                favViewmodel.addFavorite(product.title ?: "", product.image ?: "")
+                favViewmodel.addFavorite(product.productDisplayName ?: "", product.pictureLink ?: "")
             }
         }
     }

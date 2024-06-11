@@ -12,6 +12,7 @@ import com.capstone.dressify.domain.model.User
 import com.google.gson.JsonObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import retrofit2.Call
 
 class UserRepository constructor(
     private val apiService: ApiService,
@@ -24,14 +25,13 @@ class UserRepository constructor(
     val isLoading : LiveData<Boolean> = _isLoading
 
 
-    suspend fun getProductCatalog(): List<CatalogResponse> = withContext(Dispatchers.IO) {
-        val response = apiService.getProducts().execute()
-
-        if (response.isSuccessful) {
-            response.body() ?: emptyList() // Return the list or an empty list if null
-        } else {
-            throw Exception("Failed to fetch products: ${response.code()}") // Throw an exception on failure
+    suspend fun getProductCatalog(): CatalogResponse {
+        val response = apiService.getProducts()
+        val cleanedClothingItems = response.clothingItems.map { item ->
+            item.copy(pictureLink = item.pictureLink?.replace("\r", "")) // Remove \r
         }
+        return response.copy(clothingItems = cleanedClothingItems) // Return cleaned response
+
     }
 
 

@@ -8,13 +8,13 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.capstone.dressify.data.remote.response.CatalogResponse
+import com.capstone.dressify.data.remote.response.ClothingItemsItem
 import com.capstone.dressify.databinding.ItemCardBinding
 import com.capstone.dressify.ui.view.camera.CameraActivity
 import com.capstone.dressify.ui.viewmodel.FavoriteViewModel
 
 class CatalogAdapter(
-    private var productList: List<CatalogResponse>,
+    private var productList: List<ClothingItemsItem>,
     private val favoriteViewModel: FavoriteViewModel,
     private val lifecycleOwner: LifecycleOwner,
     private val onFavoriteClickListener: OnFavoriteClickListener
@@ -23,31 +23,29 @@ class CatalogAdapter(
 
     inner class CatalogViewHolder(val binding: ItemCardBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(product: CatalogResponse) {
+        fun bind(product: ClothingItemsItem) {
             Glide.with(itemView)
-                .load(product.image)
+                .load(product.pictureLink)
                 .into(binding.ivImgClothes)
-            binding.tvClotheName.text = product.title
-
-//            itemView.setOnClickListener {
-//                val intent = Intent(itemView.context, CameraActivity::class.java)
-//                startActivity(itemView.context, intent, null)
-//            }
+            binding.tvClotheName.text = product.productDisplayName
 
             binding.flCamera.setOnClickListener {
+                val imageItem = product.pictureLink
                 val intent = Intent(itemView.context, CameraActivity::class.java)
+                intent.putExtra("IMAGE_URL", imageItem)
                 startActivity(itemView.context, intent, null)
             }
+
 
             binding.ivIcFavorite.setOnClickListener {
                 onFavoriteClickListener.onFavoriteClick(product)
             }
 
-            val title: String? = product.title
-            val image: String? = product.image
+            val title: String? = product.productDisplayName
+            val image: String? = product.productDisplayName
 
             var isCheck = false
-            favoriteViewModel.isItemFavorite(product.title ?: "")
+            favoriteViewModel.isItemFavorite(product.productDisplayName ?: "")
                 .observe(lifecycleOwner) { isFavorite ->
                     if (isFavorite) {
                         binding.ivIcFavorite.isChecked = true
@@ -76,7 +74,7 @@ class CatalogAdapter(
         return CatalogViewHolder(binding)
     }
 
-    fun updateProductList(newProducts: List<CatalogResponse>) {
+    fun updateProductList(newProducts: List<ClothingItemsItem>) {
         productList = newProducts
         notifyDataSetChanged() // Refresh the adapter
     }
@@ -88,6 +86,6 @@ class CatalogAdapter(
     }
 
     interface OnFavoriteClickListener {
-        fun onFavoriteClick(product: CatalogResponse)
+        fun onFavoriteClick(product: ClothingItemsItem)
     }
 }
