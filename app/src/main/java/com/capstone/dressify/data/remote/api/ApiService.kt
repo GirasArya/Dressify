@@ -12,8 +12,6 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface ApiService {
-    @GET("products")
-    fun getProducts(): Call<List<CatalogResponse>>
 
     @POST("login")
     suspend fun login(
@@ -24,4 +22,7 @@ interface ApiService {
     suspend fun register(
         @Body raw: JsonObject
     ): RegisterResponse
+
+    @GET("list")
+    suspend fun getProducts(): CatalogResponse
 }

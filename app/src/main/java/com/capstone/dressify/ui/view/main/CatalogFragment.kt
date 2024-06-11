@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.capstone.dressify.data.remote.response.CatalogResponse
+import com.capstone.dressify.data.remote.response.ClothingItemsItem
 import com.capstone.dressify.databinding.FragmentCatalogBinding
 import com.capstone.dressify.ui.adapter.CatalogAdapter
 import com.capstone.dressify.ui.viewmodel.FavoriteViewModel
@@ -23,9 +24,8 @@ class CatalogFragment : Fragment(), CatalogAdapter.OnFavoriteClickListener {
     private val mainViewModel: MainViewModel by viewModels {
         ViewModelFactory.getInstance(requireActivity().application, requireContext().applicationContext)
     }
-   private lateinit var catalogAdapter: CatalogAdapter
+    private lateinit var catalogAdapter: CatalogAdapter
     private lateinit var favViewmodel: FavoriteViewModel
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,7 +49,8 @@ class CatalogFragment : Fragment(), CatalogAdapter.OnFavoriteClickListener {
             mainViewModel.fetchProducts()
         }
 
-        mainViewModel.productList.observe(viewLifecycleOwner) { products ->
+        mainViewModel.productList.observe(viewLifecycleOwner) { catalogResponse ->
+            val products = catalogResponse.clothingItems?.filterNotNull() ?: emptyList()
             catalogAdapter.updateProductList(products)
         }
 
@@ -60,12 +61,12 @@ class CatalogFragment : Fragment(), CatalogAdapter.OnFavoriteClickListener {
         return binding.root
     }
 
-    override fun onFavoriteClick(product: CatalogResponse) {
-        favViewmodel.isItemFavorite(product.title ?: "").observe(viewLifecycleOwner) { isFavorite ->
+    override fun onFavoriteClick(product: ClothingItemsItem) {
+        favViewmodel.isItemFavorite(product.productDisplayName ?: "").observe(viewLifecycleOwner) { isFavorite ->
             if (isFavorite) {
-                favViewmodel.deleteFavorite(product.title ?: "", product.image ?: "")
+                favViewmodel.deleteFavorite(product.productDisplayName ?: "", product.pictureLink ?: "")
             } else {
-                favViewmodel.addFavorite(product.title ?: "", product.image ?: "")
+                favViewmodel.addFavorite(product.productDisplayName ?: "", product.pictureLink ?: "")
             }
         }
     }
