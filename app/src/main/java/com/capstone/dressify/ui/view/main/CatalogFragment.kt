@@ -6,10 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
-import com.capstone.dressify.data.remote.response.CatalogResponse
 import com.capstone.dressify.data.remote.response.ClothingItemsItem
 import com.capstone.dressify.databinding.FragmentCatalogBinding
 import com.capstone.dressify.ui.adapter.CatalogAdapter
@@ -28,10 +26,6 @@ class CatalogFragment : Fragment(), CatalogAdapter.OnFavoriteClickListener {
     private lateinit var catalogAdapter: CatalogAdapter
     private lateinit var favViewmodel: FavoriteViewModel
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,14 +36,30 @@ class CatalogFragment : Fragment(), CatalogAdapter.OnFavoriteClickListener {
             ViewModelFactory.getInstance(requireActivity().application, requireContext().applicationContext)
         }
 
-        catalogAdapter = CatalogAdapter(emptyList(), favViewmodel, viewLifecycleOwner, this) // Initialize with empty list
-        binding.rvCatalogGrid.adapter = catalogAdapter.withLoadStateFooter(
-            footer = LoadingStateAdapter {
-                catalogAdapter.retry()
-            }
+        catalogAdapter = CatalogAdapter(emptyList(), favViewmodel, viewLifecycleOwner, this)
+        val headerAdapter = LoadingStateAdapter { catalogAdapter.retry() }
+        val footerAdapter = LoadingStateAdapter { catalogAdapter.retry() }
+        val concatAdapter = catalogAdapter.withLoadStateHeaderAndFooter(
+            header = headerAdapter,
+            footer = footerAdapter
         )
 
-        binding.rvCatalogGrid.layoutManager = GridLayoutManager(requireContext(), 2)
+        binding.rvCatalogGrid.adapter = concatAdapter
+        val layoutManager = GridLayoutManager(requireContext(), 2)
+        binding.rvCatalogGrid.layoutManager = layoutManager
+
+        layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                return if (position == 0 && headerAdapter.itemCount > 0) {
+                    2
+                } else if (position == concatAdapter.itemCount - 1 && footerAdapter.itemCount > 0) {
+                    2
+                } else {
+                    1
+                }
+            }
+        }
+
         lifecycleScope.launch {
             mainViewModel.fetchProducts().observe(viewLifecycleOwner) { pagingData ->
                 catalogAdapter.submitData(lifecycle, pagingData)
@@ -58,10 +68,6 @@ class CatalogFragment : Fragment(), CatalogAdapter.OnFavoriteClickListener {
 
         mainViewModel.isLoading.observe(viewLifecycleOwner) {
             showLoading(it)
-        }
-
-        lifecycleScope.launch {
-            mainViewModel.fetchProducts()
         }
 
         return binding.root
