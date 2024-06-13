@@ -129,6 +129,7 @@ class BoundingBoxDetector(
                 arrayIdx += numElements
             }
 
+
             if (maxConf > CONFIDENCE_THRESHOLD) {
                 val clsName = labels[maxIdx]
                 val cx = array[c] // 0

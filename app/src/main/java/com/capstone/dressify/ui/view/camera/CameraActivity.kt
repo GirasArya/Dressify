@@ -3,9 +3,11 @@
 package com.capstone.dressify.ui.view.camera
 
 import android.Manifest
+import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -32,7 +34,12 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import android.graphics.Matrix
 import android.graphics.drawable.Drawable
+import android.media.MediaScannerConnection
+import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
 import android.widget.ImageView
+import androidx.appcompat.app.AlertDialog
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.Camera
 import androidx.core.app.ActivityCompat
@@ -46,6 +53,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.net.MalformedURLException
@@ -136,7 +144,7 @@ class CameraActivity : AppCompatActivity(), BoundingBoxDetector.DetectorListener
         binding.ivSwitchCamera.setOnClickListener {
             isFrontCamera = !isFrontCamera
             cameraSelector = if (isFrontCamera) CameraSelector.DEFAULT_FRONT_CAMERA else CameraSelector.DEFAULT_BACK_CAMERA
-            startCamera() // Restart the camera with the new selector
+            startCamera()
         }
     }
 
@@ -145,17 +153,13 @@ class CameraActivity : AppCompatActivity(), BoundingBoxDetector.DetectorListener
 
         val cameraSelector = this.cameraSelector
 
-//        val rotation = binding.pvCameraX.display.rotation
-
         preview =  Preview.Builder()
             .setTargetAspectRatio(AspectRatio.RATIO_16_9)
-//            .setTargetRotation(rotation)
             .build()
 
         imageAnalyzer = ImageAnalysis.Builder()
             .setTargetAspectRatio(AspectRatio.RATIO_16_9)
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-//            .setTargetRotation(binding.pvCameraX.display.rotation)
             .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
             .build()
 
@@ -174,15 +178,6 @@ class CameraActivity : AppCompatActivity(), BoundingBoxDetector.DetectorListener
                 if (isFrontCamera) {
                     postScale(-1f, 1f, imageProxy.width.toFloat() / 2, imageProxy.height.toFloat() / 2)
                 }
-
-                if (isFrontCamera) {
-                    postScale(
-                        -1f,
-                        1f,
-                        imageProxy.width.toFloat(),
-                        imageProxy.height.toFloat()
-                    )
-                }
             }
 
             val rotatedBitmap = Bitmap.createBitmap(
@@ -193,6 +188,11 @@ class CameraActivity : AppCompatActivity(), BoundingBoxDetector.DetectorListener
             detector.detect(rotatedBitmap)
         }
 
+        imageCapture = ImageCapture.Builder()
+            .setTargetAspectRatio(AspectRatio.RATIO_16_9)
+            .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+            .build()
+
         cameraProvider.unbindAll()
 
         try {
@@ -200,7 +200,8 @@ class CameraActivity : AppCompatActivity(), BoundingBoxDetector.DetectorListener
                 this,
                 cameraSelector,
                 preview,
-                imageAnalyzer
+                imageAnalyzer,
+                imageCapture
             )
 
             preview?.setSurfaceProvider(binding.pvCameraX.surfaceProvider)
@@ -208,6 +209,7 @@ class CameraActivity : AppCompatActivity(), BoundingBoxDetector.DetectorListener
             Log.e(TAG, "Use case binding failed", exc)
         }
     }
+
 
     private fun startCameraUri() {
         currentImageUri = getImageUri(this)
@@ -248,43 +250,44 @@ class CameraActivity : AppCompatActivity(), BoundingBoxDetector.DetectorListener
     }
 
     private fun takePhoto() {
-        val imageCapture = imageCapture ?: return
-        val photoFile = createCustomTempFile(application)
-//        val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
-        if (photoFile == null) {
-            Toast.makeText(
-                this,
-                "Failed to create temporary file for image capture",
-                Toast.LENGTH_SHORT
-            ).show()
-            return
-        }
+        binding.pvCameraX.bitmap?.let { previewBitmap ->
+            val canvas = Canvas(previewBitmap)
+            binding.overlay.draw(canvas)
 
-        val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
-
-        imageCapture.takePicture(
-            outputOptions,
-            ContextCompat.getMainExecutor(this),
-            object : ImageCapture.OnImageSavedCallback {
-                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    val intent = Intent()
-                    intent.putExtra(EXTRA_CAMERAX_IMAGE, output.savedUri.toString())
-                    setResult(CAMERAX_RESULT, intent)
-                    finish()
-                }
-
-                override fun onError(exc: ImageCaptureException) {
-                    Toast.makeText(
-                        this@CameraActivity,
-                        "Gagal mengambil gambar.",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    Log.e(TAG, "onError: ${exc.message}")
+            val contentValues = ContentValues().apply {
+                put(MediaStore.Images.Media.DISPLAY_NAME, "Dressify_${System.currentTimeMillis()}.jpg")
+                put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
                 }
             }
-        )
-    }
 
+            val contentResolver = contentResolver
+            val imageUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+
+            try {
+                imageUri?.let {
+                    val outputStream = contentResolver.openOutputStream(it)
+                    if (outputStream != null) {
+                        previewBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                    }
+                    outputStream?.close()
+                    AlertDialog.Builder(this)
+                        .setTitle("Success")
+                        .setMessage("Photo saved to gallery")
+                        .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
+                        .show()
+                }
+            } catch (e: IOException) {
+                Log.e(TAG, "Photo capture failed: ${e.message}", e)
+                AlertDialog.Builder(this)
+                    .setTitle("Error")
+                    .setMessage("Photo capture failed")
+                    .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
+                    .show()
+            }
+        }
+    }
 
     private fun changeStatusBarColor(color: String) {
         val window: Window = window

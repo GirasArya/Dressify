@@ -54,6 +54,8 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
             val result = results[i] // Get the current bounding box
             val imageResource = imageResources.getOrNull(i) // Get the drawable for this box
 
+
+
             results.forEach {
                 val left = it.x1 * width
                 val top = it.y1 * height
