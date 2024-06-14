@@ -45,8 +45,8 @@ class CatalogAdapter(
                 onFavoriteClickListener.onFavoriteClick(product)
             }
 
-            val title: String? = product.productDisplayName
-            val image: String? = product.pictureLink
+            val title: String = product.productDisplayName ?: ""
+            val image: String = product.pictureLink ?: ""
 
             var isCheck = false
             favoriteViewModel.isItemFavorite(product.productDisplayName ?: "")
@@ -64,9 +64,9 @@ class CatalogAdapter(
             binding.ivIcFavorite.setOnClickListener {
                 isCheck = !isCheck
                 if (isCheck) {
-                    favoriteViewModel.addFavorite(title!!, image!!)
+                    favoriteViewModel.addFavorite(title, image)
                 } else {
-                    favoriteViewModel.deleteFavorite(title!!, image!!)
+                    favoriteViewModel.deleteFavorite(title, image)
                 }
                 binding.ivIcFavorite.isChecked = isCheck
             }

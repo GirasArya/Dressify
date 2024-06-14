@@ -21,12 +21,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import com.capstone.dressify.databinding.ActivityCameraBinding
-import com.capstone.dressify.helpers.createCustomTempFile
 import com.capstone.dressify.helpers.getImageUri
 import com.capstone.dressify.ui.view.imagedetail.ImageDetailActivity
 import com.capstone.dressify.ui.view.main.MainActivity
@@ -34,18 +32,13 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import android.graphics.Matrix
 import android.graphics.drawable.Drawable
-import android.media.MediaScannerConnection
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.Camera
 import androidx.core.app.ActivityCompat
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import com.capstone.dressify.R
 import com.capstone.dressify.ui.view.camera.ModelObjects.LABELS_PATH
 import com.capstone.dressify.ui.view.camera.ModelObjects.MODEL_PATH
@@ -53,10 +46,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.FileOutputStream
 import java.io.IOException
-import java.io.InputStream
-import java.net.MalformedURLException
 import java.net.URL
 
 
@@ -97,14 +87,11 @@ class CameraActivity : AppCompatActivity(), BoundingBoxDetector.DetectorListener
         setContentView(binding.root)
         cameraExecutor = Executors.newSingleThreadExecutor()
 
-        imageUrl = (intent.getStringExtra("IMAGE_URL_FAV") ?: intent.getStringExtra("IMAGE_URL")).toString()
-        if (imageUrl.isNotEmpty()) { // Check if imageUrl is NOT null or empty
-            detector = BoundingBoxDetector(this, MODEL_PATH, LABELS_PATH, this, imageUrl)
+        imageUrl = intent.getStringExtra("IMAGE_URL")!!
+        imageUrl?.let {
+            this.imageUrl = it  // Store the image URL in the activity's scope
+            detector = BoundingBoxDetector(this, MODEL_PATH, LABELS_PATH, this, it)
             detector.setup()
-        } else {
-            Log.e("CameraActivity", "Image URL is missing or null from both keys")
-            Toast.makeText(this, "Error: Image URL is missing", Toast.LENGTH_SHORT).show()
-            finish()
         }
 
         changeStatusBarColor("#007BFF")
@@ -297,7 +284,9 @@ class CameraActivity : AppCompatActivity(), BoundingBoxDetector.DetectorListener
 
     override fun onDestroy() {
         super.onDestroy()
-        detector.clear()
+        if (this::detector.isInitialized) { // Check if detector has been initialized
+            detector.clear()
+        }
         cameraExecutor.shutdown()
     }
 
@@ -313,8 +302,6 @@ class CameraActivity : AppCompatActivity(), BoundingBoxDetector.DetectorListener
     companion object {
         private const val REQUIRED_PERMISSION = Manifest.permission.CAMERA
         private const val TAG = "CameraActivity"
-        const val EXTRA_CAMERAX_IMAGE = "CameraX Image"
-        const val CAMERAX_RESULT = 200
         const val IMAGE_URI = "image_uri"
         private const val REQUEST_CODE_PERMISSIONS = 10
         private val REQUIRED_PERMISSIONS = mutableListOf (
@@ -328,13 +315,13 @@ class CameraActivity : AppCompatActivity(), BoundingBoxDetector.DetectorListener
 
     override fun onDetect(boundingBoxes: List<BoundingBox>, inferenceTime: Long) {
         runOnUiThread {
-            binding.inferenceTime.text = "${inferenceTime}ms"
-            binding.overlay.apply {
+            binding.inferenceTime?.text = "${inferenceTime}ms"
+            binding.overlay?.apply {
                 setResults(boundingBoxes)
                 GlobalScope.launch(Dispatchers.Main) {
-                    imageResources = boundingBoxes.map {
+                    imageResources = boundingBoxes.mapNotNull {
                         Log.d("OverlayDebug", "Loading image from URL: ${it.imageUrl}")
-                        loadImageFromUrl(it.imageUrl) ?: ContextCompat.getDrawable(this@CameraActivity, R.drawable.test_img)
+                        loadImageFromUrl(it.imageUrl)
                     }
                     invalidate()
                 }
