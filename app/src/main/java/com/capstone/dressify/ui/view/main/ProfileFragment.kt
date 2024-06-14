@@ -2,10 +2,11 @@ package com.capstone.dressify.ui.view.main
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.capstone.dressify.R
@@ -13,6 +14,10 @@ import com.capstone.dressify.databinding.FragmentProfileBinding
 import com.capstone.dressify.factory.ViewModelFactory
 import com.capstone.dressify.ui.view.landing.LandingActivity
 import com.capstone.dressify.ui.viewmodel.LoginViewModel
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
@@ -20,10 +25,15 @@ import com.google.firebase.auth.auth
 class ProfileFragment : Fragment() {
 
     private lateinit var binding: FragmentProfileBinding
-    private lateinit var  auth: FirebaseAuth
+    private lateinit var auth: FirebaseAuth
+    private lateinit var googleSignInClient: GoogleSignInClient
     private val loginViewModel: LoginViewModel by viewModels {
-        ViewModelFactory.getInstance(requireActivity().application, requireContext().applicationContext)
+        ViewModelFactory.getInstance(
+            requireActivity().application,
+            requireContext().applicationContext
+        )
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -77,6 +87,14 @@ class ProfileFragment : Fragment() {
 
     private fun signOut() {
         auth.signOut()
+        val gso = GoogleSignInOptions
+            .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            // ignore unresolved reference
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
+        googleSignInClient.signOut()
         loginViewModel.logout()
         startActivity(Intent(this@ProfileFragment.requireContext(), LandingActivity::class.java))
     }
