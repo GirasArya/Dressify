@@ -7,8 +7,8 @@
     <string name="txt_hintLogin">Password</string>
     <string name="txt_hintConfirmPassword">Confirm Password</string>
     <string name="txt_hintEmail">Email</string>
-    <string name="tvLoginTitle">Login</string>
-    <string name="tvRegisterTitle">Register</string>
+    <string name="tvLoginTitle">Sign In to Continue</string>
+    <string name="tvRegisterTitle">Create New Account Here!</string>
     <string name="txt_hintUsername">Username</string>
     <string name="tv_termsAgreement">I agree to the Privacy policy and Terms of use.</string>
     <string name="tflitevision_is_not_initialized_yet">TfLiteVision is not initialized yet</string>

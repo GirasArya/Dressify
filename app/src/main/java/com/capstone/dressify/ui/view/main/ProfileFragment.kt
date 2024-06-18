@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.capstone.dressify.ui.view.main
 
 import android.content.Intent
@@ -5,7 +7,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
@@ -15,7 +16,6 @@ import com.capstone.dressify.factory.ViewModelFactory
 import com.capstone.dressify.ui.view.landing.LandingActivity
 import com.capstone.dressify.ui.viewmodel.LoginViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.Firebase
@@ -71,7 +71,6 @@ class ProfileFragment : Fragment() {
             val displayName = firebaseUser.displayName
             val profileUser = firebaseUser.photoUrl
 
-
             Glide.with(this)
                 .load(profileUser)
                 .placeholder(R.drawable.avatar_profile)
@@ -82,14 +81,12 @@ class ProfileFragment : Fragment() {
             binding.tvProfileUsername.text = displayName ?: "Username not available"
             binding.profileLoading.visibility = View.GONE
         }
-
     }
 
     private fun signOut() {
         auth.signOut()
         val gso = GoogleSignInOptions
             .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            // ignore unresolved reference
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()

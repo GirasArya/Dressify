@@ -112,6 +112,9 @@ android {
         // Viewpager and dots indicator
         implementation("me.relex:circleindicator:2.1.6")
 
+        //circle image view
+        implementation("de.hdodenhof:circleimageview:3.1.0")
+
 
         //camera
         implementation("androidx.camera:camera-core:1.1.0")

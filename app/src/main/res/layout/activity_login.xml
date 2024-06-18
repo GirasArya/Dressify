@@ -18,14 +18,24 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="95dp"
+        android:layout_height="95dp"
+        android:src="@mipmap/ic_launcher"
+        app:layout_constraintBottom_toTopOf="@+id/tv_loginTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tb_login" />
+
     <TextView
         android:id="@+id/tv_loginTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/jost_regular"
         android:text="@string/tvLoginTitle"
+        android:layout_marginTop="16dp"
         android:textColor="@color/btn_primary"
-        android:textSize="32sp"
+        android:textSize="25sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -42,6 +42,8 @@ import androidx.core.app.ActivityCompat
 import com.capstone.dressify.R
 import com.capstone.dressify.ui.view.camera.ModelObjects.LABELS_PATH
 import com.capstone.dressify.ui.view.camera.ModelObjects.MODEL_PATH
+import com.capstone.dressify.ui.view.main.CatalogFragment
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -103,7 +105,8 @@ class CameraActivity : AppCompatActivity(), BoundingBoxDetector.DetectorListener
         }
 
         binding.flBackArrowCamera.setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java))
+            startActivity(Intent(this, CatalogFragment::class.java))
+            finish()
         }
 
         binding.ivAccessGallery.setOnClickListener {
@@ -141,7 +144,7 @@ class CameraActivity : AppCompatActivity(), BoundingBoxDetector.DetectorListener
         val cameraSelector = this.cameraSelector
 
         preview =  Preview.Builder()
-            .setTargetAspectRatio(AspectRatio.RATIO_16_9)
+            .setTargetAspectRatio(AspectRatio.RATIO_4_3)
             .build()
 
         imageAnalyzer = ImageAnalysis.Builder()
@@ -313,6 +316,7 @@ class CameraActivity : AppCompatActivity(), BoundingBoxDetector.DetectorListener
         binding.overlay.invalidate()
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onDetect(boundingBoxes: List<BoundingBox>, inferenceTime: Long) {
         runOnUiThread {
             binding.inferenceTime?.text = "${inferenceTime}ms"

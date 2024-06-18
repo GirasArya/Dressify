@@ -39,7 +39,8 @@
             android:exported="false" />
         <activity
             android:name=".ui.view.camera.CameraActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".ui.view.main.MainActivity"/>
         <activity
             android:name=".ui.view.login.LoginActivity"
             android:exported="false"
