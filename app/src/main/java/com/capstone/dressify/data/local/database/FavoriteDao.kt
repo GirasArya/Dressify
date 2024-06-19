@@ -20,5 +20,4 @@ interface FavoriteDao {
 
     @Query("SELECT * FROM FavoriteEntity WHERE title = :title")
     fun getFavoriteByTitle(title: String): LiveData<List<FavoriteEntity>>
-
 }

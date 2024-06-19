@@ -1,17 +1,29 @@
 <resources>
     <string name="app_name">Dressify</string>
-    <string name="tv_landingDesc">The Practical Solution for All Your Fashion Needs</string>
     <string name="txt_btnLogin">Login</string>
     <string name="txt_btnRegister">Register</string>
     <string name="tv_landingRegister">Register</string>
-    <string name="loginTextContinueWith">Or continue with</string>
+    <string name="loginTextContinueWith">Login with Google</string>
     <string name="txt_hintLogin">Password</string>
     <string name="txt_hintConfirmPassword">Confirm Password</string>
     <string name="txt_hintEmail">Email</string>
-    <string name="tvLoginTitle">Login</string>
-    <string name="tvRegisterTitle">Register</string>
+    <string name="tvLoginTitle">Sign In to Continue</string>
+    <string name="tvRegisterTitle">Create New Account Here!</string>
     <string name="txt_hintUsername">Username</string>
     <string name="tv_termsAgreement">I agree to the Privacy policy and Terms of use.</string>
+    <string name="tflitevision_is_not_initialized_yet">TfLiteVision is not initialized yet</string>
+    <string name="image_classifier_failed">Image classifier failed to initialize. See error logs for details</string>
+
+    <string name="tv_landingTitle_first">Welcome To Dressify</string>
+    <string name="tv_landingTitle_second">AR Meets Fashion</string>
+    <string name="tv_landingTitle_third">Save Your Favorite Items</string>
+
+    <string name="tv_landingDesc_first">The Practical Solution for All Your Fashion Needs</string>
+    <string name="tv_landingDesc_second">Delve Into The World Of Fashion And Technologies</string>
+    <string name="tv_landingDesc_third">Never lost your item again with favorites!</string>
+
+
+
 
     <string name="tvTitleRecomendation">Discover Your Best Style With Us</string>
     <string name="male">Male</string>
@@ -57,4 +69,11 @@
     <string name="tv_logintextAccount">Don\'t have an account?</string>
     <string name="tv_logintoregister">Register</string>
     <string name="errorPassword">Your password must be at least 6 characters long</string>
+    <string name="landing_btn_string">Get Started</string>
+    <string name="unisex">Unisex</string>
+    <string name="rainy">Rainy</string>
+    <string name="ready_to_see_a_magic">Ready to see a magic?</string>
+    <string name="click_me">Click me</string>
+    <string name="retry">Retry</string>
+    >>>>>>> dev-giras
 </resources>

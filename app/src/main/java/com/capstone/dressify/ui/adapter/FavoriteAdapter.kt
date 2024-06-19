@@ -13,6 +13,7 @@ import com.capstone.dressify.helpers.FavoriteItemCallback
 import com.capstone.dressify.ui.view.camera.CameraActivity
 import com.capstone.dressify.ui.viewmodel.FavoriteViewModel
 
+@Suppress("DEPRECATION")
 class FavoriteAdapter: RecyclerView.Adapter<FavoriteAdapter.FavoriteViewHolder>() {
 
    lateinit var favoriteViewModel: FavoriteViewModel
@@ -36,8 +37,17 @@ class FavoriteAdapter: RecyclerView.Adapter<FavoriteAdapter.FavoriteViewHolder>(
             binding.root.setOnClickListener {
                 onItemClickCallback?.onItemClicked(item, adapterPosition)
             }
+
+
             binding.ivIcFavorite.setOnClickListener {
-                favoriteViewModel.deleteFavorite(item.title, item.image ?: "")
+                favoriteViewModel.deleteFavorite(item.title, item.image.toString())
+            }
+
+            binding.flCamera.setOnClickListener {
+                val imageItem = item.image
+                val intent = Intent(itemView.context, CameraActivity::class.java)
+                intent.putExtra("IMAGE_URL", imageItem.toString())
+                startActivity(itemView.context, intent, null)
             }
 
             // Set the initial toggle state
@@ -60,7 +70,8 @@ class FavoriteAdapter: RecyclerView.Adapter<FavoriteAdapter.FavoriteViewHolder>(
             binding.ivIcFavorite.setOnClickListener {
                 notifyItemChanged(adapterPosition) // Notify the adapter to update this item
                 if (item.isCheck) {
-                    favoriteViewModel.deleteFavorite(item.title, item.image ?: "")
+                    favoriteViewModel.deleteFavorite(item.title, item.image.toString())
+                    favoriteViewModel.deleteFavorite(item.title, item.image.toString())
                 }
             }
         }

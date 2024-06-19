@@ -3,15 +3,22 @@ package com.capstone.dressify.domain.repository
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.liveData
 import com.capstone.dressify.data.local.datastore.UserPreference
 import com.capstone.dressify.data.remote.api.ApiService
 import com.capstone.dressify.data.remote.response.CatalogResponse
+import com.capstone.dressify.data.remote.response.ClothingItemsItem
 import com.capstone.dressify.data.remote.response.LoginResponse
 import com.capstone.dressify.data.remote.response.RegisterResponse
 import com.capstone.dressify.domain.model.User
+import com.capstone.dressify.helpers.CatalogPagingSource
 import com.google.gson.JsonObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import retrofit2.Call
 
 class UserRepository constructor(
     private val apiService: ApiService,
@@ -24,14 +31,13 @@ class UserRepository constructor(
     val isLoading : LiveData<Boolean> = _isLoading
 
 
-    suspend fun getProductCatalog(): List<CatalogResponse> = withContext(Dispatchers.IO) {
-        val response = apiService.getProducts().execute()
-
-        if (response.isSuccessful) {
-            response.body() ?: emptyList() // Return the list or an empty list if null
-        } else {
-            throw Exception("Failed to fetch products: ${response.code()}") // Throw an exception on failure
-        }
+    suspend fun getProductCatalog(): LiveData<PagingData<ClothingItemsItem>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 6
+            ),
+            pagingSourceFactory = { CatalogPagingSource(apiService) }
+        ).liveData
     }
 
 

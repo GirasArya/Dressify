@@ -6,15 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
-import com.capstone.dressify.data.remote.response.CatalogResponse
+import com.capstone.dressify.data.remote.response.ClothingItemsItem
 import com.capstone.dressify.databinding.FragmentCatalogBinding
 import com.capstone.dressify.ui.adapter.CatalogAdapter
 import com.capstone.dressify.ui.viewmodel.FavoriteViewModel
 import com.capstone.dressify.ui.viewmodel.MainViewModel
 import com.capstone.dressify.factory.ViewModelFactory
+import com.capstone.dressify.ui.adapter.LoadingStateAdapter
 import kotlinx.coroutines.launch
 
 class CatalogFragment : Fragment(), CatalogAdapter.OnFavoriteClickListener {
@@ -23,13 +23,8 @@ class CatalogFragment : Fragment(), CatalogAdapter.OnFavoriteClickListener {
     private val mainViewModel: MainViewModel by viewModels {
         ViewModelFactory.getInstance(requireActivity().application, requireContext().applicationContext)
     }
-   private lateinit var catalogAdapter: CatalogAdapter
+    private lateinit var catalogAdapter: CatalogAdapter
     private lateinit var favViewmodel: FavoriteViewModel
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,16 +36,34 @@ class CatalogFragment : Fragment(), CatalogAdapter.OnFavoriteClickListener {
             ViewModelFactory.getInstance(requireActivity().application, requireContext().applicationContext)
         }
 
-        catalogAdapter = CatalogAdapter(emptyList(), favViewmodel, viewLifecycleOwner, this) // Initialize with empty list
-        binding.rvCatalogGrid.adapter = catalogAdapter
-        binding.rvCatalogGrid.layoutManager = GridLayoutManager(requireContext(), 2)
+        catalogAdapter = CatalogAdapter(emptyList(), favViewmodel, viewLifecycleOwner, this)
+        val headerAdapter = LoadingStateAdapter { catalogAdapter.retry() }
+        val footerAdapter = LoadingStateAdapter { catalogAdapter.retry() }
+        val concatAdapter = catalogAdapter.withLoadStateHeaderAndFooter(
+            header = headerAdapter,
+            footer = footerAdapter
+        )
 
-        lifecycleScope.launch {
-            mainViewModel.fetchProducts()
+        binding.rvCatalogGrid.adapter = concatAdapter
+        val layoutManager = GridLayoutManager(requireContext(), 2)
+        binding.rvCatalogGrid.layoutManager = layoutManager
+
+        layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                return if (position == 0 && headerAdapter.itemCount > 0) {
+                    2
+                } else if (position == concatAdapter.itemCount - 1 && footerAdapter.itemCount > 0) {
+                    2
+                } else {
+                    1
+                }
+            }
         }
 
-        mainViewModel.productList.observe(viewLifecycleOwner) { products ->
-            catalogAdapter.updateProductList(products)
+        lifecycleScope.launch {
+            mainViewModel.fetchProducts().observe(viewLifecycleOwner) { pagingData ->
+                catalogAdapter.submitData(lifecycle, pagingData)
+            }
         }
 
         mainViewModel.isLoading.observe(viewLifecycleOwner) {
@@ -60,12 +73,12 @@ class CatalogFragment : Fragment(), CatalogAdapter.OnFavoriteClickListener {
         return binding.root
     }
 
-    override fun onFavoriteClick(product: CatalogResponse) {
-        favViewmodel.isItemFavorite(product.title ?: "").observe(viewLifecycleOwner) { isFavorite ->
+    override fun onFavoriteClick(product: ClothingItemsItem) {
+        favViewmodel.isItemFavorite(product.productDisplayName ?: "").observe(viewLifecycleOwner) { isFavorite ->
             if (isFavorite) {
-                favViewmodel.deleteFavorite(product.title ?: "", product.image ?: "")
+                favViewmodel.deleteFavorite(product.productDisplayName ?: "", product.pictureLink ?: "")
             } else {
-                favViewmodel.addFavorite(product.title ?: "", product.image ?: "")
+                favViewmodel.addFavorite(product.productDisplayName ?: "", product.pictureLink ?: "")
             }
         }
     }
