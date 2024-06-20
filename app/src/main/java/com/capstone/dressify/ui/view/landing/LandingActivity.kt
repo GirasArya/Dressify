@@ -10,7 +10,6 @@ import com.capstone.dressify.R
 import com.capstone.dressify.databinding.ActivityLandingBinding
 import com.capstone.dressify.ui.adapter.LandingAdapter
 import com.capstone.dressify.ui.view.login.LoginActivity
-import me.relex.circleindicator.CircleIndicator
 import me.relex.circleindicator.CircleIndicator3
 
 class LandingActivity : AppCompatActivity() {

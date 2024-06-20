@@ -19,11 +19,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@mipmap/ic_launcher" />
-
         <TextView
             android:id="@+id/tb_catalogTitle"
             android:layout_width="wrap_content"
@@ -32,7 +27,7 @@
             android:fontFamily="@font/itim_regular"
             android:text="@string/catalog_toolbar_title"
             android:textSize="28sp"
-            android:textColor="#615EFC"
+            android:textColor="@color/btn_primary"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/tb_catalog"
             app:layout_constraintEnd_toEndOf="parent"

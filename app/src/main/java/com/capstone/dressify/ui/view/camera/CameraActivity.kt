@@ -27,7 +27,6 @@ import androidx.core.content.ContextCompat
 import com.capstone.dressify.databinding.ActivityCameraBinding
 import com.capstone.dressify.helpers.getImageUri
 import com.capstone.dressify.ui.view.imagedetail.ImageDetailActivity
-import com.capstone.dressify.ui.view.main.MainActivity
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import android.graphics.Matrix
@@ -39,7 +38,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.Camera
 import androidx.core.app.ActivityCompat
-import com.capstone.dressify.R
 import com.capstone.dressify.ui.view.camera.ModelObjects.LABELS_PATH
 import com.capstone.dressify.ui.view.camera.ModelObjects.MODEL_PATH
 import com.capstone.dressify.ui.view.main.CatalogFragment
@@ -67,7 +65,7 @@ class CameraActivity : AppCompatActivity(), BoundingBoxDetector.DetectorListener
     private var cameraProvider: ProcessCameraProvider? = null
     private lateinit var detector: BoundingBoxDetector
     private lateinit var imageUrl: String
-    lateinit var cameraExecutor: ExecutorService
+    private lateinit var cameraExecutor: ExecutorService
     private fun allPermissionGranted() =
         ContextCompat.checkSelfPermission(
             this, REQUIRED_PERMISSION
@@ -90,7 +88,7 @@ class CameraActivity : AppCompatActivity(), BoundingBoxDetector.DetectorListener
         cameraExecutor = Executors.newSingleThreadExecutor()
 
         imageUrl = intent.getStringExtra("IMAGE_URL")!!
-        imageUrl?.let {
+        imageUrl.let {
             this.imageUrl = it  // Store the image URL in the activity's scope
             detector = BoundingBoxDetector(this, MODEL_PATH, LABELS_PATH, this, it)
             detector.setup()
@@ -144,7 +142,7 @@ class CameraActivity : AppCompatActivity(), BoundingBoxDetector.DetectorListener
         val cameraSelector = this.cameraSelector
 
         preview =  Preview.Builder()
-            .setTargetAspectRatio(AspectRatio.RATIO_4_3)
+            .setTargetAspectRatio(AspectRatio.RATIO_16_9)
             .build()
 
         imageAnalyzer = ImageAnalysis.Builder()
@@ -319,8 +317,8 @@ class CameraActivity : AppCompatActivity(), BoundingBoxDetector.DetectorListener
     @OptIn(DelicateCoroutinesApi::class)
     override fun onDetect(boundingBoxes: List<BoundingBox>, inferenceTime: Long) {
         runOnUiThread {
-            binding.inferenceTime?.text = "${inferenceTime}ms"
-            binding.overlay?.apply {
+            binding.inferenceTime.text = "${inferenceTime}ms"
+            binding.overlay.apply {
                 setResults(boundingBoxes)
                 GlobalScope.launch(Dispatchers.Main) {
                     imageResources = boundingBoxes.mapNotNull {

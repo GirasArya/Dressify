@@ -16,9 +16,6 @@ import com.capstone.dressify.data.remote.response.RegisterResponse
 import com.capstone.dressify.domain.model.User
 import com.capstone.dressify.helpers.CatalogPagingSource
 import com.google.gson.JsonObject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import retrofit2.Call
 
 class UserRepository constructor(
     private val apiService: ApiService,
@@ -31,7 +28,7 @@ class UserRepository constructor(
     val isLoading : LiveData<Boolean> = _isLoading
 
 
-    suspend fun getProductCatalog(): LiveData<PagingData<ClothingItemsItem>> {
+    fun getProductCatalog(): LiveData<PagingData<ClothingItemsItem>> {
         return Pager(
             config = PagingConfig(
                 pageSize = 6
@@ -72,11 +69,6 @@ class UserRepository constructor(
         var response = apiService.register(param)
         return response
     }
-        
-//    suspend fun login(email: String, password: String) : LoginResponse {
-//        return apiService.login(email, password)
-//    }
-
 
     suspend fun logout() {
         return pref.clearUserToken()

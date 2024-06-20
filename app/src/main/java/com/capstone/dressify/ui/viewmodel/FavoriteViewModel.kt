@@ -17,8 +17,8 @@ class FavoriteViewModel(application: Application): ViewModel() {
     private val mFavoriteRepository: FavoriteRepository = FavoriteRepository(application)
     private var favoriteDao: FavoriteDao
     private var db: FavoriteRoomDatabase = FavoriteRoomDatabase.getDatabase(application)
-    var itemFavorite: Boolean = false
-    var _isLoading = MutableLiveData<Boolean>()
+    private var itemFavorite: Boolean = false
+    private var _isLoading = MutableLiveData<Boolean>()
     var isLoading : LiveData<Boolean> = _isLoading
 
     init {
