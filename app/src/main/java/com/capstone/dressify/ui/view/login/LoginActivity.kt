@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.capstone.dressify.ui.view.login
 
 import android.app.Activity
@@ -5,7 +7,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.widget.Toast
@@ -16,11 +17,9 @@ import androidx.lifecycle.lifecycleScope
 import com.capstone.dressify.R
 import com.capstone.dressify.data.local.datastore.UserPreference
 import com.capstone.dressify.data.local.datastore.dataStore
-import com.capstone.dressify.data.remote.response.LoginResponse
 import com.capstone.dressify.databinding.ActivityLoginBinding
 import com.capstone.dressify.domain.model.User
 import com.capstone.dressify.factory.ViewModelFactory
-import com.capstone.dressify.ui.view.main.MainActivity
 import com.capstone.dressify.ui.view.recommendation.RecommendationActivity
 import com.capstone.dressify.ui.view.register.RegisterActivity
 import com.capstone.dressify.ui.viewmodel.LoginViewModel
@@ -33,7 +32,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.auth
-import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 

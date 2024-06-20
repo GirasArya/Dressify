@@ -13,7 +13,7 @@ class MainViewModel(private val repository: UserRepository) : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> get() = _isLoading
 
-    suspend fun fetchProducts(): LiveData<PagingData<ClothingItemsItem>> {
+    fun fetchProducts(): LiveData<PagingData<ClothingItemsItem>> {
         _isLoading.value = true
         val products = repository.getProductCatalog().cachedIn(viewModelScope)
         _isLoading.value = false

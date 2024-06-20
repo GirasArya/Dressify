@@ -8,8 +8,6 @@ import android.util.Log
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
-import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.capstone.dressify.R
@@ -53,6 +51,7 @@ class MainActivity : AppCompatActivity() {
             .replace(R.id.fl_fragment, CatalogFragment())
             .commit()
 
+        @Suppress("DEPRECATION")
         bottomNavigationView.setOnNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.nav_catalog -> {
@@ -87,8 +86,8 @@ class MainActivity : AppCompatActivity() {
                 if (it.isLoggedIn || firebaseUser != null) {
                     //get session token of firebase user and save it into local datastore
                     if (firebaseUser != null) {
-                        firebaseUser?.getIdToken(true)
-                            ?.addOnSuccessListener { result ->
+                        firebaseUser.getIdToken(true)
+                            .addOnSuccessListener { result ->
                                 token = result.token!!
                                 Log.d("FirebaseToken", "Token: $token")
                             }

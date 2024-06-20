@@ -1,12 +1,9 @@
 package com.capstone.dressify.ui.view.camera
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.os.SystemClock
 import android.util.Log
-import com.capstone.dressify.R
-import com.capstone.dressify.helpers.getImageUri
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.support.common.FileUtil
@@ -35,6 +32,7 @@ class BoundingBoxDetector(
     private var tensorHeight = 0
     private var numChannel = 0
     private var numElements = 0
+    private var previousBoundingBoxes: List<BoundingBox>? = null
 
     private val imageProcessor = ImageProcessor.Builder()
         .add(NormalizeOp(INPUT_MEAN, INPUT_STANDARD_DEVIATION))
@@ -84,6 +82,7 @@ class BoundingBoxDetector(
         if (numChannel == 0) return
         if (numElements == 0) return
 
+
         var inferenceTime = SystemClock.uptimeMillis()
 
         val resizedBitmap = Bitmap.createScaledBitmap(frame, tensorWidth, tensorHeight, false)
@@ -99,7 +98,25 @@ class BoundingBoxDetector(
 
 
 
-        val bestBoxes = bestBox(output.floatArray, imageUrl ?: "")
+        val bestBoxes = bestBox(output.floatArray, imageUrl)
+
+        previousBoundingBoxes?.let { prevBoxes ->
+            bestBoxes?.forEachIndexed { i, box ->
+                val prevBox = prevBoxes.getOrNull(i)
+                if (prevBox != null) {
+                    val smoothingFactor = 0.5f // Adjust this value as needed
+
+                    box.x1 = box.x1 * smoothingFactor + prevBox.x1 * (1 - smoothingFactor)
+                    box.y1 = box.y1 * smoothingFactor + prevBox.y1 * (1 - smoothingFactor)
+                    box.x2 = box.x2 * smoothingFactor + prevBox.x2 * (1 - smoothingFactor)
+                    box.y2 = box.y2 * smoothingFactor + prevBox.y2 * (1 - smoothingFactor)
+                    box.cx = box.cx * smoothingFactor + prevBox.cx * (1 - smoothingFactor)
+                    box.cy = box.cy * smoothingFactor + prevBox.cy * (1 - smoothingFactor)
+                }
+            }
+        }
+
+        previousBoundingBoxes = bestBoxes
         inferenceTime = SystemClock.uptimeMillis() - inferenceTime
 
 
